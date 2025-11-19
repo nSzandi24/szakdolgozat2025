@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Nyomokra fel!</title>
+	<link rel="stylesheet" href="styles/start.css">
+</head>
+<body>
+	<aside id="leftSidebar" class="sidebar">
+		<div class="sidebar-inner">
+			<!-- Bal sáv tartalma: helyszín információk, térkép, stb. -->
+		</div>
+	</aside>
+	<main class="game-area">
+		<header>
+			<button id="logoutBtn" class="logout-btn">Kijelentkezés</button>
+		</header>
+
+		<section id="dialogue" class="dialogue">
+			<!-- Narratív szöveg jelenik meg itt -->
+		</section>
+
+		<section id="choices" class="choices">
+			<!-- Választási buborékok jönnek ide -->
+		</section>
+
+		<div id="response" class="response hidden" aria-hidden="true">
+			<div class="response-inner">
+				<div id="responseText" class="response-text"></div>
+				<div class="response-actions">
+					<button id="backChoices" class="btn">Vissza a válaszokhoz</button>
+				</div>
+			</div>
+		</div>
+
+		<footer class="controls">
+			<button id="backBtn" class="btn">Vissza</button>
+			<button id="nextBtn" class="btn primary">Következő</button>
+		</footer>
+	</main>
+
+	<script src="scripts/info.js"></script>
+	<script src="scripts/start.js"></script>
+</body>
+</html>
+

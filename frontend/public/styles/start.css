@@ -1,0 +1,107 @@
+/* Basic layout */
+:root{
+    --bg:#f5f7fb;
+    --bubble:#ffffff;
+    --accent:#2b6cb0;
+    --sidebar-width: 240px;
+}
+body{
+    font-family:Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg) url("../pictures/home.png") no-repeat center center fixed;
+    background-size: cover;
+    margin:0;
+    padding-left: var(--sidebar-width);
+    display: flex;
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:var(--sidebar-width);
+    background: #E0D1A2;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+    z-index:60;
+    display:flex;
+    align-items:flex-start;
+    padding:18px;
+}
+.sidebar-inner{width:100%;}
+
+@media (max-width:800px){
+    .sidebar{display:none}
+    body{padding-left:0}
+}
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.game-area{
+    max-width:900px;
+    margin:28px auto;
+    padding:20px;
+    position:relative;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;}
+
+header h1{margin:0 0 6px;font-size:28px}
+.subtitle{margin:0 0 12px;color:#444}
+
+.dialogue{min-height:120px;padding:16px;border-radius:10px;background:linear-gradient(180deg,#eef3fb,#ffffff);box-shadow:0 2px 6px rgba(0,0,0,0.05);margin-bottom:12px}
+.dialogue .bubble{display:block;margin:0 auto;text-align:center;background:var(--bubble);padding:12px 16px;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.06);max-width:80%}
+
+.choices{display:flex;flex-wrap:wrap;gap:12px}
+.choice-bubble{background:var(--bubble);padding:10px 14px;border-radius:14px;cursor:pointer;border:1px solid #e2e8f0;transition:transform .12s,box-shadow .12s}
+.choice-bubble:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(43,108,176,0.08)}
+.choice-bubble:active{transform:translateY(0)}
+
+.response{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;padding:20px}
+.response.hidden{display:none}
+.response-inner{background:var(--bubble);padding:20px;border-radius:10px;max-width:720px;box-shadow:0 12px 40px rgba(0,0,0,0.2)}
+.response-text{white-space:pre-wrap;color:#111}
+.response-actions{margin-top:12px;text-align:right}
+
+.response-inline{
+    display:block;
+    margin:0 auto;
+    text-align:center;
+    max-width:80%;
+}
+
+/* Narrative scene image (e.g. character portrait) */
+.narrative-img{
+    display:block;
+    max-width:240px;
+    width:100%;
+    height:auto;
+    margin:12px auto 0;
+    border-radius:8px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+.controls{margin-top:16px;text-align:right}
+.btn{background:transparent;border:1px solid #cbd5e1;padding:8px 12px;border-radius:6px;cursor:pointer}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+@media (max-width:600px){.dialogue{padding:12px}.choice-bubble{flex:1 1 100%}}
+
+/* Logout button for start page -- positioned within the centered game area */
+.logout-btn{
+    position:fixed;
+    top:12px;
+    right:12px;
+    background:#E0D1A2;
+    color:#000;
+    border:2px solid #000;
+    padding:10px 14px;
+    border-radius:16px;
+    cursor:pointer;
+    box-shadow:0 4px 24px rgba(0,0,0,0.2);
+    font-style:italic;
+}
+
+.logout-btn:active{transform:translateY(1px)}

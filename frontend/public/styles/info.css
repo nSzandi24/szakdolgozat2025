@@ -1,0 +1,67 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background: url("../pictures/information.png") no-repeat center center fixed;
+    background-size: cover;
+}
+
+h1 {
+    color: black;
+}
+
+.main-box h2 {
+    font-weight: normal;
+}
+
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 24px;
+
+}
+
+.main-box {
+    border: 2px solid #000;
+    background: #E0D1A2;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    padding: 40px 32px;
+    min-width: 520px;
+    max-width: 600px;
+    font-style: italic;
+}
+
+.info-section {
+    text-align: left;
+    width: 100%;
+    margin-top: 16px;
+    line-height: 1.5;
+    color: #222;
+}
+
+.info-section p {
+    margin: 8px 0;
+}
+
+/* Logout button */
+.logout-btn{
+    position:fixed;
+    top:12px;
+    right:12px;
+    background:#E0D1A2; /* match .main-box background */
+    color:#000;
+    border:2px solid #000; /* match .main-box border */
+    padding:10px 14px;
+    border-radius:16px; /* match .main-box radius */
+    cursor:pointer;
+    box-shadow:0 4px 24px rgba(0,0,0,0.2); /* match .main-box shadow */
+    font-style:italic; /* match .main-box text style */
+}
+
+.logout-btn:active{transform:translateY(1px)}

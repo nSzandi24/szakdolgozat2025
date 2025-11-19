@@ -18,7 +18,12 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         console.log('Bejelentkezés válasz:', data);
 
         if (data.success) {
-            // Sikeres bejelentkezés
+            // Sikeres bejelentkezés: mentsük el a felhasználó adatait localStorage-be
+            try {
+                localStorage.setItem('user', JSON.stringify(data.user));
+            } catch (err) {
+                console.warn('Nem sikerült localStorage-ba menteni a user-t:', err);
+            }
             window.location.href = 'info.html';
         } else {
             alert(data.message || 'Sikertelen bejelentkezés!');
