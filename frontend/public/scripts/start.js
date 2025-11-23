@@ -1,104 +1,411 @@
 
 
 (function(){
-    const scenes = [
-        {type:'narrative', text:'Kalandod egy középkori városban kezdődik Szirtkikötőben. E kisváros jelentős helyszín az ország számára mert egy fontos kikötőváros, ahol rengeteg kereskedelem zajlik. Egy fejlett város, így mindenféle emberrel találkozhatsz. Itt élsz te is mint egy visszavonult városi őr. Legutolsó ügyedben olyan személyeket kerestél meg és kérdeztél ki, akiket talán nem kellett volna, így úgy döntöttél inkább visszavonulsz és alkalomadtán egy-egy ügyet egyedül kinyomozól. De az itteni lakosok ismernek a városban, tisztelték a munkádat így az emberek többsége barátságosan és segítően fogad. A mai napod is átlagosan kezdődik, otthon vagy még mikor a városi őr dübörög az ajtódon és a nevedet kiáltozza segítségért..'},
-        {type:'narrative', text:'Alex detektív! Kérem nyissa ki az ajtót, sürgős ügyben keresem!'},
-        {type:'narrative', text:'Ahogy kinyitod az ajtót, Gerald-val találod szembe magadat, az egyik városi őrrel. Eléggé liheg és arcáról rémületet tudsz leolvasni'},
-        {type:'narrative', image: 'pictures/characters/gerald.png',text:'Alex detektív! Kérem azonnal jöjjön velem, találtunk egy holtestet a parkban, szükségünk lenne az Ön segítségére!' },
+    // Location-based scenes: each location has its own scenes
+    const locationScenes = {
+        'Otthon': [
+            {type:'narrative', text:'Kalandod egy középkori városban kezdődik Szirtkikötőben. E kisváros jelentős helyszín az ország számára mert egy fontos kikötőváros, ahol rengeteg kereskedelem zajlik. Egy fejlett város, így mindenféle emberrel találkozhatsz. Itt élsz te is mint egy visszavonult városi őr. Legutolsó ügyedben olyan személyeket kerestél meg és kérdeztél ki, akiket talán nem kellett volna, így úgy döntöttél inkább visszavonulsz és alkalomadtán egy-egy ügyet egyedül kinyomozól. De az itteni lakosok ismernek a városban, tisztelték a munkádat így az emberek többsége barátságosan és segítően fogad. A mai napod is átlagosan kezdődik, otthon vagy még mikor a városi őr dübörög az ajtódon és a nevedet kiáltozza segítségért..', once: true},
+            {type:'narrative', text:'Alex detektív! Kérem nyissa ki az ajtót, sürgős ügyben keresem!', once: true},
+            {type:'narrative', text:'Ahogy kinyitod az ajtót, Gerald-val találod szembe magadat, az egyik városi őrrel. Eléggé liheg és arcáról rémületet tudsz leolvasni.', once: true},
+            {type:'narrative', image: 'pictures/characters/gerald.png',text:'Alex detektív! Kérem azonnal jöjjön velem, találtunk egy holtestet a parkban, szükségünk lenne az Ön segítségére!', location: 'Városi park', once: true},
+            {type:'narrative', image: 'pictures/characters/gerald.png',text:'Részleteket sajnos nem tudok, a helyszínen vár Önre Lucas fő őr és majd eligazítja az ügyben.', once: true},
+            {type:'narrative', text:'Otthon vagy. Nyugalom vesz körül.'}
+        ],
+        'Városi park': [
+            {type:'narrative', text:'Megérkeztél a városi parkba. A rendszerint nyugodt és csendes helyszínt most városi őrök vették körül. A park közepén egy pad mellett fekszik a holtest, ilyen távolról nem tudod megállapítani, hogy ki lehet az, és mi történhetett.', once: true},
+            {type:'narrative', text:'Lucas fő őr int neked, hogy gyere közelebb.', once: true},
+            {type:'choices', prompt:'Mit teszel?', choices:[
+                {id:'lucas', label:'Lucas fő őr', nextScene: 3}
+            ], once: true},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Jó reggelt Alex detektív! Szükségünk van a segítségére ebben az ügyben.'},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'A reggeli körjáratomban voltam, mikor észrevettem a testet a padnál. Azonnal értesítettem Gerald-ot, hogy hívja ide Önt. Régen nem volt már gyilkossági ügy, így remélem segíteni tud nekünk a nyomozásban.'},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'A helyszínt nem kutattuk át, várjuk az Ön utasításait.'},
+            {type:'choices', prompt:'Mit teszel?', choices:[
+                {id:'lucas2', label:'Lucas fő őr', nextScene: 3},
+                {id:'investigate', label:'Helyszín átnézése', nextScene: 7},
+                {id:'analyze', label:'Tárgyak elemzése', nextScene: 8, condition: 'investigationCompleted'}
+            ]},
+            {type:'investigation', image: 'pictures/nyom1.png', buttonLabel: 'Nyomok keresésének befejezése', nextScene: 6},
+            {type:'choices', prompt:'Mit talált detektív?', image: 'pictures/characters/lucas.png', choices:[
+                {id:'nyom1', label:'Kalapács', nextScene: 9},
+                {id:'nyom2', label:'Kendő', nextScene: 10},
+                {id:'nyom3', label:'Gyümölcsöcskék', nextScene: 11},
+                {id:'nyom4', label:'Fapálca', nextScene: 12},
+                {id:'nyom5', label:'Kő', nextScene: 13},
+                {id:'nyom6', label:'Falevél', nextScene: 14},
+                {id:'nyom7', label:'Pad deszkája', nextScene: 15},
+                {id:'nyom8', label:'Virág', nextScene: 16},
+                {id:'nyom9', label:'Kötél', nextScene: 17},
+                {id:'nyom10', label:'Szövet cafat', nextScene: 18},
+                {id:'nyom11', label:'Fűszál', nextScene: 19},
+                {id:'nyom12', label:'Fakéreg', nextScene: 20},
+                {id:'nyom13', label:'Moha', nextScene: 21},
+                {id:'nyom14', label:'Kis bot', nextScene: 22},
+                {id:'nyom15', label:'Rozsdás szög', nextScene: 23},
+                {id:'nyom16', label:'Törött cserép', nextScene: 24},
+                {id:'nyom17', label:'Madártoll', nextScene: 25},
+                {id:'finish', label:'Nyomok keresésének befejezése', nextScene: 6}
+            ]},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a kalapács véres. Valószínűleg ez lehet a gyilkos eszköze.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a kendő a William báró címerét tartalmazza. Lehet a szolgáló nő a családnak dolgozott.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'A gyümölcsök még frissnek tűnnek. Lehet a piacról jött éppen hazafele mikor megtámadták.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
+            {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8}
+        ]
+    };
 
-        /*{type:'choices', prompt:'Mit szeretnél megnézni először?', choices:[
-            {id:'c1', label:'A levélszekrény', response:'A levélben egy titokzatos utalás található: "Találkozó éjfélkor".'},
-            {id:'c2', label:'A padló nyomai', response:'A padlón apró gumiabroncs-nyomok vezetnek a piac irányába.'},
-            {id:'c3', label:'A közelben álló alak', response:'Az alak eltűnik, amikor közelebb érsz, de egy csillogó fémdarab hever a földön.'}
-        ]},*/
-        //{type:'narrative', text:'Ahogy közelebb lépsz, furcsa zaj hallatszik a sikátor felől.'}
-    ];
-
-    let idx = 0;
-    let responseActive = false; // true when a choice response is currently shown inline
-    let history = [];
-    // Persisted key for current progress
-    const STORAGE_KEY = 'game_state_v1';
+    let currentLocation = 'Otthon';
+    let locationIndices = {}; // track scene index for each location
+    let seenOnceScenes = new Set(); // track scenes marked as 'once' that have been seen
+    let responseActive = false;
+    let discoveredLocations = new Set(['Otthon']);
+    let investigationCompleted = false; // track if investigation has been done
+    let lucasDialogueCompleted = false; // track if Lucas dialogue has been completed
+    
+    // Map location names to background images
+    const locationBackgrounds = {
+        'Otthon': 'pictures/home.png',
+        'Városi park': 'pictures/varosipark.png'
+    };
+    
+    // Get user-specific storage key
+    function getStorageKey(){
+        try {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return null;
+            const user = JSON.parse(userStr);
+            return `game_progress_${user.username}`;
+        } catch(e) {
+            console.warn('Failed to get user info:', e);
+            return null;
+        }
+    }
 
     const dialogueEl = document.getElementById('dialogue');
     const choicesEl = document.getElementById('choices');
-    // We'll render responses inline (replace dialogue+choices area)
-    const nextBtn = document.getElementById('nextBtn');
-    const backBtn = document.getElementById('backBtn');
+    const characterImageEl = document.getElementById('characterImage');
+    const controlsEl = document.querySelector('.controls');
+    const nextButtonContainer = document.getElementById('nextButtonContainer');
 
     function clearAreas(){
         if (dialogueEl) dialogueEl.innerHTML = '';
         if (choicesEl) choicesEl.innerHTML = '';
+        if (characterImageEl) characterImageEl.innerHTML = '';
+        if (nextButtonContainer) nextButtonContainer.innerHTML = '';
     }
 
-    function saveState(){
-        try{
-            const state = { idx, responseActive, responseText: (responseActive? (document.querySelector('.response-inline')?.textContent || '') : '') };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        }catch(e){ console.warn('saveState failed', e); }
+    function changeBackground(locationName){
+        const bgImage = locationBackgrounds[locationName];
+        if (bgImage) {
+            document.body.style.backgroundImage = `url('${bgImage}')`;
+            currentLocation = locationName;
+            
+            if (locationName === 'Otthon') {
+                // For Otthon: if returning, skip to first non-once scene
+                if (!(locationName in locationIndices)) {
+                    locationIndices[locationName] = 0;
+                } else {
+                    const scenes = locationScenes[locationName] || [];
+                    let startIdx = 0;
+                    for (let i = 0; i < scenes.length; i++) {
+                        const sceneKey = `${locationName}_${i}`;
+                        if (!scenes[i].once || !seenOnceScenes.has(sceneKey)) {
+                            startIdx = i;
+                            break;
+                        }
+                    }
+                    locationIndices[locationName] = startIdx;
+                }
+            } else if (locationName === 'Városi park' && lucasDialogueCompleted) {
+                // For Városi park: if Lucas dialogue completed, skip to "Mit teszel?" but keep the first scenes as once
+                const scenes = locationScenes[locationName] || [];
+                let startIdx = 0;
+                for (let i = 0; i < scenes.length; i++) {
+                    const sceneKey = `${locationName}_${i}`;
+                    if (!scenes[i].once || !seenOnceScenes.has(sceneKey)) {
+                        startIdx = i;
+                        break;
+                    }
+                }
+                // If all once scenes are seen, go to scene 6 ("Mit teszel?")
+                if (startIdx >= 6 || (scenes[startIdx] && !scenes[startIdx].once)) {
+                    locationIndices[locationName] = 6;
+                } else {
+                    locationIndices[locationName] = startIdx;
+                }
+            } else {
+                // For all other locations: always start from beginning
+                locationIndices[locationName] = 0;
+            }
+            
+            updateLocations(); // Update the location list to show active state
+            renderScene();
+            saveProgress();
+        }
     }
 
-    function loadState(){
-        try{
-            const raw = localStorage.getItem(STORAGE_KEY);
+    function updateLocations(){
+        const locationsList = document.querySelector('.locations-section ul');
+        if (!locationsList) return;
+        locationsList.innerHTML = '';
+        discoveredLocations.forEach(loc => {
+            const li = document.createElement('li');
+            li.className = 'location-item';
+            // Add 'active' class if this is the current location
+            if (loc === currentLocation) {
+                li.classList.add('active');
+            }
+            li.textContent = loc;
+            // Add click handler to change background only if not already at this location
+            li.style.cursor = 'pointer';
+            li.addEventListener('click', () => {
+                if (currentLocation !== loc) {
+                    changeBackground(loc);
+                }
+            });
+            locationsList.appendChild(li);
+        });
+    }
+
+    function saveProgress(){
+        try {
+            const key = getStorageKey();
+            if (!key) return;
+            const state = { 
+                currentLocation,
+                locationIndices, 
+                responseActive, 
+                discoveredLocations: Array.from(discoveredLocations),
+                seenOnceScenes: Array.from(seenOnceScenes),
+                investigationCompleted,
+                lucasDialogueCompleted
+            };
+            localStorage.setItem(key, JSON.stringify(state));
+        } catch(e) {
+            console.warn('Failed to save progress:', e);
+        }
+    }
+
+    function loadProgress(){
+        try {
+            const key = getStorageKey();
+            if (!key) return null;
+            const raw = localStorage.getItem(key);
             if (!raw) return null;
             return JSON.parse(raw);
-        }catch(e){ console.warn('loadState failed', e); return null; }
+        } catch(e) {
+            console.warn('Failed to load progress:', e);
+            return null;
+        }
     }
 
     function renderScene(){
         clearAreas();
         responseActive = false;
-        // enable/disable back button depending on history or active response
-        try { if (backBtn) backBtn.disabled = !(responseActive || history.length>0); } catch(e){}
-        if(idx < 0) idx = 0;
-        if(idx >= scenes.length){
-            dialogueEl.innerHTML = '<div class="bubble">A jelenet véget ért. Gratulálok!</div>';
-            nextBtn.disabled = true;
+        
+        const scenes = locationScenes[currentLocation] || [];
+        const idx = locationIndices[currentLocation] || 0;
+        
+        // Check if current scene is a 'once' scene that was already seen
+        const currentScene = scenes[idx];
+        const isSeenOnceScene = currentScene && currentScene.once && seenOnceScenes.has(`${currentLocation}_${idx}`);
+        
+        if(idx < 0) {
+            locationIndices[currentLocation] = 0;
             return;
         }
-        nextBtn.disabled = false;
+        if(idx >= scenes.length){
+            return;
+        }
         const s = scenes[idx];
+        
+        // Mark this scene as seen if it's marked 'once'
+        if (s.once) {
+            const sceneKey = `${currentLocation}_${idx}`;
+            seenOnceScenes.add(sceneKey);
+        }
+        
+        // check if this scene unlocks a new location
+        if (s.location && !discoveredLocations.has(s.location)) {
+            discoveredLocations.add(s.location);
+            updateLocations();
+        }
+        
         if(s.type === 'narrative'){
             const b = document.createElement('div');
             b.className = 'bubble';
             b.textContent = s.text;
             dialogueEl.appendChild(b);
-            // if the scene has an image, render it below the narrative bubble
-            if (s.image) {
+            
+            // if the scene has an image, render it in separate character section
+            if (s.image && characterImageEl) {
                 const img = document.createElement('img');
                 img.src = s.image;
                 img.alt = '';
                 img.className = 'narrative-img';
-                dialogueEl.appendChild(img);
+                characterImageEl.appendChild(img);
+            }
+            
+            // Add Next button for narrative scenes
+            // Exclude: Otthon scene 4 ("Részleteket sajnos nem tudok...")
+            // Exclude: Otthon scene 5 (last fallback scene)
+            const isOtthonExcluded = currentLocation === 'Otthon' && (idx === 4 || idx === 5);
+            const shouldShowNextButton = !isOtthonExcluded;
+            
+            if (shouldShowNextButton && nextButtonContainer) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'next-btn';
+                nextBtn.type = 'button';
+                nextBtn.textContent = 'Következő';
+                nextBtn.addEventListener('click', () => {
+                    // Check if narrative has a nextScene property
+                    if (s.nextScene !== undefined) {
+                        locationIndices[currentLocation] = s.nextScene;
+                    } else {
+                        // Otherwise increment normally
+                        locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                    }
+                    renderScene();
+                    saveProgress();
+                });
+                nextButtonContainer.appendChild(nextBtn);
             }
         } else if(s.type === 'choices'){
+            // if the scene has an image, render it in separate character section
+            if (s.image && characterImageEl) {
+                const img = document.createElement('img');
+                img.src = s.image;
+                img.alt = '';
+                img.className = 'narrative-img';
+                characterImageEl.appendChild(img);
+            }
+            
             const prompt = document.createElement('div');
             prompt.className = 'bubble';
             prompt.textContent = s.prompt || '';
             dialogueEl.appendChild(prompt);
 
             s.choices.forEach(choice => {
+                // Check if choice has a condition and if it's met
+                if (choice.condition === 'investigationCompleted' && !investigationCompleted) {
+                    return; // Skip this choice if investigation not completed
+                }
+                
                 const cb = document.createElement('button');
                 cb.className = 'choice-bubble';
                 cb.type = 'button';
                 cb.textContent = choice.label;
                 cb.addEventListener('click', () => {
                     console.debug('[start.js] choice clicked', choice.id);
-                    showInlineResponse(choice.response);
+                    
+                    // Mark Lucas dialogue as completed when clicking Lucas option
+                    if (choice.id === 'lucas' || choice.id === 'lucas2') {
+                        lucasDialogueCompleted = true;
+                    }
+                    
+                    if (choice.nextScene !== undefined) {
+                        // Jump to specific scene
+                        locationIndices[currentLocation] = choice.nextScene;
+                        renderScene();
+                        saveProgress();
+                    } else if (choice.response) {
+                        // Show inline response (old behavior)
+                        showInlineResponse(choice.response, choice.image);
+                    }
                 });
-                choicesEl.appendChild(cb);
+                dialogueEl.appendChild(cb);
             });
+        } else if(s.type === 'investigation'){
+            // Hide controls and dialogue for investigation
+            if (controlsEl) controlsEl.style.display = 'none';
+            if (dialogueEl) dialogueEl.style.display = 'none';
+            
+            // Investigation scene: show image in a container with button below
+            const container = document.createElement('div');
+            container.className = 'investigation-container';
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.style.gap = '20px';
+            container.style.padding = '40px';
+            container.style.background = 'white';
+            container.style.borderRadius = '12px';
+            container.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            container.style.maxWidth = '900px';
+            container.style.margin = '0 auto';
+            
+            if (s.image) {
+                const img = document.createElement('img');
+                img.src = s.image;
+                img.alt = '';
+                img.className = 'investigation-img';
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                img.style.borderRadius = '8px';
+                container.appendChild(img);
+            }
+            
+            // Create the finish button
+            const finishBtn = document.createElement('button');
+            finishBtn.className = 'choice-bubble';
+            finishBtn.type = 'button';
+            finishBtn.textContent = s.buttonLabel || 'Befejezés';
+            finishBtn.style.minWidth = '250px';
+            finishBtn.addEventListener('click', () => {
+                // Mark investigation as completed
+                investigationCompleted = true;
+                
+                // Restore controls and dialogue
+                if (controlsEl) controlsEl.style.display = '';
+                if (dialogueEl) dialogueEl.style.display = '';
+                
+                if (s.nextScene !== undefined) {
+                    locationIndices[currentLocation] = s.nextScene;
+                    renderScene();
+                    saveProgress();
+                }
+            });
+            container.appendChild(finishBtn);
+            
+            // Append to characterImage section instead of dialogue
+            if (characterImageEl) {
+                characterImageEl.appendChild(container);
+            }
+        } else {
+            // For non-investigation scenes, ensure controls and dialogue are visible
+            if (controlsEl) controlsEl.style.display = '';
+            if (dialogueEl) dialogueEl.style.display = '';
         }
-        // persist current index/scene state
-        saveState();
+        saveProgress();
     }
 
-    function showInlineResponse(text){
+    function showInlineResponse(text, imageUrl){
         // clear previous dialogue and choices
         if (dialogueEl) dialogueEl.innerHTML = '';
         if (choicesEl) choicesEl.innerHTML = '';
+        if (characterImageEl) characterImageEl.innerHTML = '';
+
+        // If there's an image, show it
+        if (imageUrl && characterImageEl) {
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = '';
+            img.className = 'narrative-img';
+            characterImageEl.appendChild(img);
+        }
 
         // response container
         const wrap = document.createElement('div');
@@ -111,54 +418,38 @@
 
         // mark that a response is active; Next button will restore choices
         responseActive = true;
-        // persist response text so reloads can restore it
-        try{ saveState(); } catch(e){}
-        try { if (backBtn) backBtn.disabled = false; } catch(e){}
-        // optionally focus the Next button so user can press it
-        try { if (nextBtn) nextBtn.focus(); } catch (e){}
+        saveProgress();
 
         if (dialogueEl) dialogueEl.appendChild(wrap);
     }
 
-    nextBtn.addEventListener('click', () => {
-        if (responseActive) {
-            // restore the choices for the same scene
-            responseActive = false;
-            renderScene();
-            return;
+    // Init - load saved progress if exists
+    const saved = loadProgress();
+    if (saved) {
+        currentLocation = saved.currentLocation || 'Otthon';
+        locationIndices = saved.locationIndices || {};
+        responseActive = saved.responseActive || false;
+        investigationCompleted = saved.investigationCompleted || false;
+        lucasDialogueCompleted = saved.lucasDialogueCompleted || false;
+        if (saved.discoveredLocations) {
+            discoveredLocations = new Set(saved.discoveredLocations);
         }
-        // push current scene to history before moving forward
-        history.push(idx);
-        idx++;
-        renderScene();
-        saveState();
-    });
-
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            // if a response is active, first restore choices for this scene
-            if (responseActive) {
-                responseActive = false;
-                renderScene();
-                return;
-            }
-            if (history.length > 0) {
-                idx = history.pop();
-                renderScene();
-                saveState();
-            }
-        });
+        if (saved.seenOnceScenes) {
+            seenOnceScenes = new Set(saved.seenOnceScenes);
+        }
     }
-
-    // Init: try to restore previous state
-    const prev = loadState();
-    if (prev && typeof prev.idx === 'number'){
-        idx = prev.idx;
+    
+    // Initialize current location index if not exists
+    if (!(currentLocation in locationIndices)) {
+        locationIndices[currentLocation] = 0;
     }
+    
+    // Set initial background
+    const bgImage = locationBackgrounds[currentLocation];
+    if (bgImage) {
+        document.body.style.backgroundImage = `url('${bgImage}')`;
+    }
+    updateLocations();
     renderScene();
-    // if previous state had an active response, restore it
-    if (prev && prev.responseActive && prev.responseText){
-        showInlineResponse(prev.responseText);
-    }
 
 })();
