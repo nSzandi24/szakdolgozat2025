@@ -240,6 +240,12 @@
                 nextBtn.type = 'button';
                 nextBtn.textContent = 'Következő';
                 nextBtn.addEventListener('click', () => {
+                    // Check if scene has a redirect action
+                    if (s.action === 'redirect' && s.redirectUrl) {
+                        window.location.href = s.redirectUrl;
+                        return;
+                    }
+                    
                     // Check if narrative has a nextScene property
                     if (s.nextScene !== undefined) {
                         locationIndices[currentLocation] = s.nextScene;

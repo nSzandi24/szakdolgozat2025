@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyümölcs Pakoló Játék</title>
+    <link rel="stylesheet" href="styles/game1.css">
+</head>
+<body>
+    <h1>Gyümölcs Pakoló Játék</h1>
+    <div id="score">Pontszám: 0</div>
+    <div class="controls">
+        <button id="startBtn">Játék Indítása</button>
+        <button id="endBtn">Játék Befejezése</button>
+    </div>
+    <div id="game"></div>
+    
+    <div class="instructions">
+        <h3>Játékszabályok</h3>
+        <p>
+            Segíts az árusnak rendbe rakni a gyümölcsöket! 
+            Kattints egy téglára az oszlop alján, majd kattints egy másik oszlopra a mozgatáshoz.
+            Ha 4 azonos színű tégla kerül egymás mellé egy oszlopban, eltűnnek és pontokat kapsz.
+            <br><br>
+            <strong>Cél:</strong> Érj el 5000 pontot a győzelemhez!
+            <br>
+            <strong>Vigyázat:</strong> Ha egy oszlop túl magasra nő, vége a játéknak!
+        </p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../../backend/scripts/game1_sobics.js"></script>
+</body>
+</html>
