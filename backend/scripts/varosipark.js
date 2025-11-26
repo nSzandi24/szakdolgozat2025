@@ -33,14 +33,14 @@ const varosiparkScenes = [
         {id:'nyom15', label:'Rozsdás szög', nextScene: 12},
         {id:'nyom16', label:'Törött cserép', nextScene: 12},
         {id:'nyom17', label:'Madártoll', nextScene: 12},
-        {id:'finish', label:'Nyomok keresésének befejezése', nextScene: 26}
+        {id:'finish', label:'Nyomok keresésének befejezése', nextScene: 13}
     ]},
     {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a kalapács véres. Valószínűleg ez lehet a gyilkos eszköze.', addItem: 'Kalapács', nextScene: 8},
     {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a kendő a William báró címerét tartalmazza. Lehet a szolgáló nő a családnak dolgozott.', addItem: 'Kendő', location: 'Báró birtoka', nextScene: 8},
     {type:'narrative', image: 'pictures/characters/lucas.png', text:'A gyümölcsök még frissnek tűnnek. Lehet a piacról jött éppen hazafele mikor megtámadták.', addItem: 'Gyümölcsök', location: 'Piac', nextScene: 8},
     {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 8},
-    {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ebben az esetben hogyha nincs már szükség rám akkor visszatérnék az őrsre.', location: 'Városi őrség', nextScene: 6, condition: 'lucasAvailable'},
-    {type:'narrative', text:'Lucas városi őr az őrségen van, ha bármi kérdésed van ott keresd.', nextScene: 6},
+    {type:'narrative', image: 'pictures/characters/lucas.png', text:'Ebben az esetben hogyha nincs már szükség rám akkor visszatérnék az őrsre.', location: 'Városi őrség', nextScene: 14},
+    {type:'narrative', text:'Lucas városi őr az őrségen van, ha bármi kérdésed van ott keresd.', nextScene: 6, setState: {lucasAvailable: false}},
     {type:'narrative', text:'Egy városi őr őrzi a gyilkossági helyszínt, nem állít meg abban hogy közelebb mehess a tetthelyhez.', nextScene: 6}
 ];
 

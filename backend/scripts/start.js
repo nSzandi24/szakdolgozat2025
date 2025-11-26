@@ -418,6 +418,14 @@
             }
 
             s.choices.forEach(choice => {
+                // Check if choice requires an item the player doesn't have
+                if (choice.requiresItem) {
+                    console.log('requiresItem check:', choice.requiresItem, 'has:', collectedItems.includes(choice.requiresItem), 'collectedItems:', collectedItems);
+                }
+                if (choice.requiresItem && !collectedItems.includes(choice.requiresItem)) {
+                    return; // Skip this choice if player doesn't have required item
+                }
+                
                 // Check if choice has a condition and if it's met
                 if (choice.condition === 'investigationCompleted' && !investigationCompleted) {
                     return; // Skip this choice if investigation not completed
@@ -443,6 +451,22 @@
                 if (choice.condition === 'baronTalked') {
                     if (!gameFlags.baronTalked) {
                         return; // Skip this choice if haven't talked to baron yet
+                    }
+                }
+                if (choice.condition === 'sapadtInfoNeeded') {
+                    if (!gameFlags.sapadtInfoNeeded) {
+                        return; // Skip this choice if sápadt info not needed yet
+                    }
+                }
+                if (choice.condition === 'hasNaplo') {
+                    console.log('hasNaplo check:', gameFlags.hasNaplo);
+                    if (!gameFlags.hasNaplo) {
+                        return; // Skip this choice if napló not found yet
+                    }
+                }
+                if (choice.condition === 'ghostskinInfoNeeded') {
+                    if (!gameFlags.ghostskinInfoNeeded) {
+                        return; // Skip this choice if ghostskin info not needed yet
                     }
                 }
                 

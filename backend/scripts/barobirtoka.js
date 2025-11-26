@@ -12,8 +12,8 @@ const barobirtokaScenes = [
     ]},
     {type:'evidence_choices', prompt:'Melyik nyomról kérdezel?', image:'pictures/characters/thomas.png', choices:[
         {id:'kendo', label:'Kendő', nextScene: 7, requiresItem: 'Kendő'},
-        {id:'kalapacs', label:'Kalapács', nextScene: 43, requiresItem: 'Kalapács'},
-        {id:'gyumolcsok', label:'Gyümölcsök', nextScene: 47, requiresItem: 'Gyümölcsök'},
+        {id:'kalapacs', label:'Kalapács', nextScene: 50, requiresItem: 'Kalapács'},
+        {id:'gyumolcsok', label:'Gyümölcsök', nextScene: 54, requiresItem: 'Gyümölcsök'},
         {id:'back', label:'Vissza', nextScene: 5}
     ]},
     {type:'narrative', text:'Megmutatod Thomasnak a kendőt a báró címerével.'},
@@ -50,8 +50,8 @@ const barobirtokaScenes = [
     ]},
     {type:'evidence_choices', prompt:'Melyik nyomról kérdezel?', image:'pictures/characters/thomas.png', choices:[
         {id:'kendo', label:'Kendő', nextScene: 37, requiresItem: 'Kendő'},
-        {id:'kalapacs', label:'Kalapács', nextScene: 50, requiresItem: 'Kalapács'},
-        {id:'gyumolcsok', label:'Gyümölcsök', nextScene: 54, requiresItem: 'Gyümölcsök'},
+        {id:'kalapacs', label:'Kalapács', nextScene: 43, requiresItem: 'Kalapács'},
+        {id:'gyumolcsok', label:'Gyümölcsök', nextScene: 47, requiresItem: 'Gyümölcsök'},
         {id:'back', label:'Vissza', nextScene: 29}
     ]},
     {type:'narrative', text:'Charlotte kisasszony nagyon kedves volt. Minden reggel köszönt nekem, amikor a lovakat etettem, és naponta többször is összefutottunk és mindig beszélgettünk kicsit.', image:'pictures/characters/thomas.png'},
@@ -63,7 +63,8 @@ const barobirtokaScenes = [
     {type:'narrative', text:'Újra megmutatod Thomasnak a kendőt.'},
     {type:'narrative', text:'Thomas szomorúan nézi.'},
     {type:'narrative', text:'Igen, ez a kendő eredetileg az enyém volt. Kérem a báró úrnak ne árulja el, de Charlotte és köztem több volt mint munkaviszony.', image:'pictures/characters/thomas.png'},
-    {type:'narrative', text:'Teljesen titokba tartottuk, éjszakánként mentem át hozzá. Az igaz, hogy az utóbbi időkben valami megváltozott, de az indokát még nekem sem árulta el. Volt olyan éjszaka, hogy megkért ne menjek át, és akkor láttam hogy kiszökött, de nem követtem.', image:'pictures/characters/thomas.png'},
+    {type:'narrative', text:'Teljesen titokba tartottuk, éjszakánként mentem át hozzá. Az igaz, hogy az utóbbi időkben valami megváltozott, de az indokát még nekem sem árulta el.', image:'pictures/characters/thomas.png'},
+    {type:'narrative', text:'Volt olyan éjszaka, hogy megkért ne menjek át, és akkor láttam hogy kiszökött, de nem követtem. Másnap mikor rákérdeztem csak annyit árult el nekem hogy a Ghostskin-nel találkozott.', image:'pictures/characters/thomas.png'},
     {type:'narrative', text:'Abban tudok segíteni, hogy adok magának egy kulcsot. Ez a kulcs a kisasszony szobájához tartozik. Adott nekem egyet, hogy hangtalanul betudjak szökni hozzá.', image:'pictures/characters/thomas.png'},
     {type:'narrative', text:'Thomas nézi még egy pillanat erejéig a kendőt, aztán visszaadja és átadja a kulcsot.', addItem: 'Charlotte szobakulcsa', location: 'Charlotte szobája', nextScene: 29},
     {type:'narrative', text:'Megmutatod Thomasnak a kalapácsot.'},

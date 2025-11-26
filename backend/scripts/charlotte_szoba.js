@@ -29,13 +29,13 @@ const charlotteSzobaScenes = [
     ]},
     {type:'narrative', text:'Ez a tárgy nem érdekes a nyomozás ügyében.', nextScene: 3},
     {type:'narrative', text:'A ládát átkutatva találsz benne egy naplót. Van rajta egy lakat, de kulcsod nincs hozzá.'},
-    {type:'narrative', text:'Célszerű lenne hazamenned és otthon megpróbálnod feltörni a lakatot a naplón az otthoni szerszámjaiddal.', addItem: 'Napló', nextScene: 3},
-    {type:'narrative', text:'Ezek gyógyszereknek tűnnek. Tudásod alapján tudod, hogy ilyen nem lehet szerezni gyógyfüveseknél sem.'},
+    {type:'narrative', text:'Célszerű lenne hazamenned és otthon megpróbálnod feltörni a lakatot a naplón az otthoni szerszámjaiddal.', addItem: 'Napló', setState: {hasNaplo: true}, nextScene: 3},
+    {type:'narrative', text:'Ezek gyógyszereknek tűnnek. Tudásod alapján tudod, hogy ilyen nem lehet szerezni gyógyfüveseknél sem. Talán emiatt szökött ki az egyik éjszaka.'},
     {type:'narrative', text:'Célszerű lenne elmenned a nyomornegyedbe utána nézni ennek.', addItem: 'Furcsa bogyók', location: 'Nyomornegyed', nextScene: 3},
     {type:'narrative', text:'Ezek tintafoltok az asztalon. Úgy tűnik, mintha valaki írt volna valamit, de az a könyv nincsen az asztalon.', nextScene: 3},
     {type:'narrative', text:'Ezek a foltok olyan mintha vezetne valahova. Be az ágy alá.'},
-    {type:'narrative', text:'Az ágy alatt találsz egy kis zacskót melyben néhány cukorkának tűnő dolgot találsz. Hasonlítanak arra amit a báró említett.', addItem: 'Furcsa cukorkák', nextScene: 3},
-    {type:'narrative', text:'Ideje minnél gyorsabban elmenned a helyszínről mielőtt valaki meglátna.', nextScene: 1}
+    {type:'narrative', text:'Az ágy alatt találsz egy kis zacskót melyben néhány cukorkának tűnő dolgot találsz. A zacskón van egy jel ami a Ghostskin-re utal. A cukorkák hasonlítanak arra amit a báró említett.', addItem: 'Furcsa cukorkák', nextScene: 3},
+    {type:'narrative', text:'Ideje minnél gyorsabban elmenned a helyszínről mielőtt valaki meglátna. Lucas fő őrnek lesz valamilyen információja erről a Ghostskin-ről.', nextScene: 1, setState: {ghostskinInfoNeeded: true}}
 ];
 
 const charlotteSzobaBackground = 'pictures/charlotte_szoba.png';
