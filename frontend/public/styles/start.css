@@ -96,6 +96,21 @@ body{
     border-width:2px;
 }
 
+.item{
+    border:1px solid #000;
+    border-radius:6px;
+    padding:8px 10px !important;
+    margin:4px 0;
+    background:rgba(255,255,255,0.3);
+    transition: background 0.2s, font-weight 0.2s, border-width 0.2s;
+}
+
+.item.active{
+    background:rgba(255,255,255,0.7);
+    font-weight:bold;
+    border-width:2px;
+}
+
 @media (max-width:800px){
     .sidebar{display:none}
     body{padding-left:0}

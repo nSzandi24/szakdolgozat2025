@@ -159,7 +159,28 @@ $(document).ready(function () {
                 gameRunning = false;
                 $('#score').text('A végleges pontszámod: ' + score);
                 $('#startBtn').prop('disabled', false);
-                alert('Game Over');
+                
+                // Save that we're returning from lost game and set scene index (same as abandoned)
+                const userStr = localStorage.getItem('user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    const progressKey = `game_progress_${user.username}`;
+                    const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+                    
+                    // Set Piac location to scene 20 (angry merchant)
+                    if (!progress.locationIndices) progress.locationIndices = {};
+                    progress.locationIndices['Piac'] = 20;
+                    
+                    localStorage.setItem(progressKey, JSON.stringify(progress));
+                }
+                
+                alert('Elvesztetted a játékot!');
+                
+                // Redirect back to the main game
+                setTimeout(function() {
+                    window.location.href = 'start.html';
+                }, 100);
+                
                 return false;
             }
         });

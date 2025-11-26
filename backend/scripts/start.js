@@ -8,7 +8,9 @@
         'Városi park': varosiparkScenes,
         'Báró birtoka': barobirtokaScenes,
         'Piac': piacScenes,
-        'Rendőrség': rendorsegScenes
+        'Városi őrség': rendorsegScenes,
+        'Charlotte szobája': charlotteSzobaScenes,
+        'Nyomornegyed': nyomornegyedScenes
     };
 
     let currentLocation = 'Otthon';
@@ -20,6 +22,7 @@
     let lucasDialogueCompleted = false; // track if Lucas dialogue has been completed
     let lucasAvailable = true; // track if Lucas is available to talk
     let gameFlags = {}; // track custom game flags (piacIncidentHeard, piacMerchantAngry, etc.)
+    let collectedItems = []; // track collected evidence and items
     
     // Map location names to background images
     const locationBackgrounds = {
@@ -27,7 +30,9 @@
         'Városi park': varosiparkBackground,
         'Báró birtoka': barobirtokaBackground,
         'Piac': piacBackground,
-        'Rendőrség': rendorsegBackground
+        'Városi őrség': rendorsegBackground,
+        'Charlotte szobája': charlotteSzobaBackground,
+        'Nyomornegyed': nyomornegyedBackground
     };
     
     // Get user-specific storage key
@@ -54,6 +59,79 @@
         if (choicesEl) choicesEl.innerHTML = '';
         if (characterImageEl) characterImageEl.innerHTML = '';
         if (nextButtonContainer) nextButtonContainer.innerHTML = '';
+    }
+
+    function updateItemsList(){
+        const itemsListEl = document.getElementById('itemsList');
+        if (!itemsListEl) return;
+        itemsListEl.innerHTML = '';
+        
+        // Check if current scene has evidencePrompt (allows evidence interaction)
+        const scenes = locationScenes[currentLocation] || [];
+        const idx = locationIndices[currentLocation] || 0;
+        const currentScene = scenes[idx];
+        const evidenceActive = currentScene && currentScene.evidencePrompt;
+        
+        collectedItems.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'item';
+            li.textContent = item;
+            
+            if (evidenceActive) {
+                li.classList.add('active');
+                li.style.cursor = 'pointer';
+                li.addEventListener('click', () => {
+                    handleItemClick(item);
+                });
+            } else {
+                li.style.cursor = 'default';
+            }
+            
+            itemsListEl.appendChild(li);
+        });
+    }
+
+    function handleItemClick(itemName){
+        // Check if current scene accepts evidence
+        const scenes = locationScenes[currentLocation] || [];
+        const idx = locationIndices[currentLocation] || 0;
+        const currentScene = scenes[idx];
+        
+        // Look for the closest evidence_choices scene to current index
+        // First check forward from current position, then backward
+        let closestIndex = -1;
+        let closestDistance = Infinity;
+        
+        for (let i = 0; i < scenes.length; i++) {
+            if (scenes[i].type === 'evidence_choices') {
+                const matchingChoice = scenes[i].choices.find(c => 
+                    c.requiresItem === itemName && collectedItems.includes(itemName)
+                );
+                if (matchingChoice && matchingChoice.nextScene !== undefined) {
+                    const distance = Math.abs(i - idx);
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = i;
+                    }
+                }
+            }
+        }
+        
+        if (closestIndex !== -1) {
+            const matchingChoice = scenes[closestIndex].choices.find(c => 
+                c.requiresItem === itemName && collectedItems.includes(itemName)
+            );
+            locationIndices[currentLocation] = matchingChoice.nextScene;
+            renderScene();
+            saveProgress();
+        }
+    }
+
+    function addItem(itemName){
+        if (!collectedItems.includes(itemName)) {
+            collectedItems.push(itemName);
+            updateItemsList();
+        }
     }
 
     function changeBackground(locationName){
@@ -149,7 +227,8 @@
                 investigationCompleted,
                 lucasDialogueCompleted,
                 lucasAvailable,
-                gameFlags
+                gameFlags,
+                collectedItems
             };
             localStorage.setItem(key, JSON.stringify(state));
         } catch(e) {
@@ -270,6 +349,11 @@
                         }
                     }
                     
+                    // Add item to collection if specified
+                    if (s.addItem) {
+                        addItem(s.addItem);
+                    }
+                    
                     // Check if narrative has a nextScene property
                     if (s.nextScene !== undefined) {
                         locationIndices[currentLocation] = s.nextScene;
@@ -300,6 +384,19 @@
             prompt.className = 'bubble';
             prompt.textContent = s.prompt || '';
             dialogueEl.appendChild(prompt);
+            
+            // Add evidence prompt as disabled button if exists
+            if (s.evidencePrompt) {
+                const evidenceBtn = document.createElement('button');
+                evidenceBtn.className = 'choice-bubble';
+                evidenceBtn.type = 'button';
+                evidenceBtn.textContent = s.evidencePrompt;
+                evidenceBtn.disabled = true;
+                evidenceBtn.style.opacity = '0.6';
+                evidenceBtn.style.cursor = 'not-allowed';
+                evidenceBtn.title = 'Kattints a bal oldali tárgyak listájában';
+                dialogueEl.appendChild(evidenceBtn);
+            }
 
             // Create a grid container for choices if there are many items
             const hasMultipleChoices = s.choices.filter(choice => {
@@ -338,6 +435,24 @@
                         return; // Skip this choice if merchant is angry
                     }
                 }
+                if (choice.condition === 'baronAvailable') {
+                    if (!gameFlags.baronAvailable) {
+                        return; // Skip this choice if baron is not available yet
+                    }
+                }
+                if (choice.condition === 'baronTalked') {
+                    if (!gameFlags.baronTalked) {
+                        return; // Skip this choice if haven't talked to baron yet
+                    }
+                }
+                
+                // Check if this is a once-only choice that has already been selected
+                if (choice.once) {
+                    const choiceKey = `${currentLocation}_choice_${choice.id}`;
+                    if (seenOnceScenes.has(choiceKey)) {
+                        return; // Skip this choice if already selected before
+                    }
+                }
                 
                 const cb = document.createElement('button');
                 cb.className = 'choice-bubble';
@@ -363,6 +478,12 @@
                         lucasDialogueCompleted = true;
                     }
                     
+                    // Mark once-only choices as seen
+                    if (choice.once) {
+                        const choiceKey = `${currentLocation}_choice_${choice.id}`;
+                        seenOnceScenes.add(choiceKey);
+                    }
+                    
                     if (choice.nextScene !== undefined) {
                         // Jump to specific scene
                         locationIndices[currentLocation] = choice.nextScene;
@@ -386,6 +507,45 @@
                 } else {
                     dialogueEl.appendChild(cb);
                 }
+            });
+        } else if(s.type === 'evidence_choices'){
+            // Evidence-based choices: show only items that player has collected
+            if (s.image && characterImageEl) {
+                const isLucasImage = s.image.includes('lucas.png');
+                if (!isLucasImage || (isLucasImage && lucasAvailable)) {
+                    const img = document.createElement('img');
+                    img.src = s.image;
+                    img.alt = '';
+                    img.className = 'narrative-img';
+                    characterImageEl.appendChild(img);
+                }
+            }
+            
+            const prompt = document.createElement('div');
+            prompt.className = 'bubble';
+            prompt.textContent = s.prompt || '';
+            dialogueEl.appendChild(prompt);
+
+            s.choices.forEach(choice => {
+                // Skip choices that require an item the player doesn't have
+                if (choice.requiresItem && !collectedItems.includes(choice.requiresItem)) {
+                    return;
+                }
+                
+                const cb = document.createElement('button');
+                cb.className = 'choice-bubble';
+                cb.type = 'button';
+                cb.textContent = choice.label;
+                
+                cb.addEventListener('click', () => {
+                    if (choice.nextScene !== undefined) {
+                        locationIndices[currentLocation] = choice.nextScene;
+                        renderScene();
+                        saveProgress();
+                    }
+                });
+                
+                dialogueEl.appendChild(cb);
             });
         } else if(s.type === 'investigation'){
             // Hide controls and dialogue for investigation
@@ -454,6 +614,10 @@
             if (controlsEl) controlsEl.style.display = '';
             if (dialogueEl) dialogueEl.style.display = '';
         }
+        
+        // Update items list to reflect clickability based on current scene
+        updateItemsList();
+        
         saveProgress();
     }
 
@@ -498,6 +662,8 @@
         lucasDialogueCompleted = saved.lucasDialogueCompleted || false;
         lucasAvailable = saved.lucasAvailable !== undefined ? saved.lucasAvailable : true;
         gameFlags = saved.gameFlags || {};
+        collectedItems = saved.collectedItems || [];
+        updateItemsList();
         if (saved.discoveredLocations) {
             discoveredLocations = new Set(saved.discoveredLocations);
         }
