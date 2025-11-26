@@ -14,7 +14,7 @@ const varosiparkScenes = [
         {id:'investigate', label:'Helyszín átnézése', nextScene: 7},
         {id:'analyze', label:'Tárgyak elemzése', nextScene: 8, condition: 'investigationCompleted'}
     ]},
-    {type:'investigation', image: 'pictures/nyom1.png', buttonLabel: 'Helyszín átnézésének befejezése', nextScene: 6},
+    {type:'investigation', image: 'pictures/nyom.png', buttonLabel: 'Helyszín átnézésének befejezése', nextScene: 6},
     {type:'choices', prompt:'Mit talált detektív?', image: 'pictures/characters/lucas.png', choices:[
         {id:'nyom1', label:'Kalapács', nextScene: 9},
         {id:'nyom2', label:'Kendő', nextScene: 10},

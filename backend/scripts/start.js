@@ -19,6 +19,7 @@
     let investigationCompleted = false; // track if investigation has been done
     let lucasDialogueCompleted = false; // track if Lucas dialogue has been completed
     let lucasAvailable = true; // track if Lucas is available to talk
+    let gameFlags = {}; // track custom game flags (piacIncidentHeard, piacMerchantAngry, etc.)
     
     // Map location names to background images
     const locationBackgrounds = {
@@ -147,7 +148,8 @@
                 seenOnceScenes: Array.from(seenOnceScenes),
                 investigationCompleted,
                 lucasDialogueCompleted,
-                lucasAvailable
+                lucasAvailable,
+                gameFlags
             };
             localStorage.setItem(key, JSON.stringify(state));
         } catch(e) {
@@ -197,6 +199,21 @@
             return;
         }
         
+        // Check for game1Abandoned condition
+        if (s.condition === 'game1Abandoned') {
+            const wasAbandoned = localStorage.getItem('game1Abandoned') === 'true';
+            if (!wasAbandoned) {
+                // Skip this scene if game wasn't abandoned
+                locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                renderScene();
+                saveProgress();
+                return;
+            } else {
+                // Clear the flag after showing the scene once
+                localStorage.removeItem('game1Abandoned');
+            }
+        }
+        
         // Mark this scene as seen if it's marked 'once'
         if (s.once) {
             const sceneKey = `${currentLocation}_${idx}`;
@@ -244,6 +261,13 @@
                     if (s.action === 'redirect' && s.redirectUrl) {
                         window.location.href = s.redirectUrl;
                         return;
+                    }
+                    
+                    // Handle setState to save flags to localStorage
+                    if (s.setState) {
+                        for (const [key, value] of Object.entries(s.setState)) {
+                            gameFlags[key] = value;
+                        }
                     }
                     
                     // Check if narrative has a nextScene property
@@ -303,6 +327,16 @@
                 }
                 if (choice.condition === 'lucasAvailable' && !lucasAvailable) {
                     return; // Skip Lucas option if he's not available
+                }
+                if (choice.condition === 'piacIncidentHeard') {
+                    if (!gameFlags.piacIncidentHeard) {
+                        return; // Skip this choice if piac incident not heard
+                    }
+                }
+                if (choice.condition === 'notAbandonedGame') {
+                    if (gameFlags.piacMerchantAngry) {
+                        return; // Skip this choice if merchant is angry
+                    }
                 }
                 
                 const cb = document.createElement('button');
@@ -463,6 +497,7 @@
         investigationCompleted = saved.investigationCompleted || false;
         lucasDialogueCompleted = saved.lucasDialogueCompleted || false;
         lucasAvailable = saved.lucasAvailable !== undefined ? saved.lucasAvailable : true;
+        gameFlags = saved.gameFlags || {};
         if (saved.discoveredLocations) {
             discoveredLocations = new Set(saved.discoveredLocations);
         }

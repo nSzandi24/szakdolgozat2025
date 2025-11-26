@@ -1,16 +1,26 @@
 $(document).ready(function () {
-    let colors = ['red', 'green', 'blue', 'yellow'];
+    let fruits = [
+        {name: 'alma', image: 'pictures/sobics/alma.png'},
+        {name: 'szolo', image: 'pictures/sobics/szolo.png'},
+        {name: 'lila_szolo', image: 'pictures/sobics/lila_szolo.png'},
+        {name: 'korte', image: 'pictures/sobics/korte.png'}
+    ];
     let score = 0;
     let gameRunning = false;
 
-    function generateRandomColor() {
-        return colors[Math.floor(Math.random() * colors.length)];
+    function generateRandomFruit() {
+        return fruits[Math.floor(Math.random() * fruits.length)];
     }
 
     function generateRandomBrick() {
-        return $('<div class="brick"></div>').css({
-            backgroundColor: generateRandomColor()
-        });
+        const fruit = generateRandomFruit();
+        return $('<div class="brick"></div>')
+            .css({
+                backgroundImage: `url(${fruit.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+            })
+            .attr('data-fruit', fruit.name);
     }
 
     function generateColumn() {
@@ -32,12 +42,12 @@ $(document).ready(function () {
             let bricks = $(this).children('.brick');
             if (bricks.length >= 4) {
                 let lastFourBricks = bricks.slice(-4);
-                let isSameColor = lastFourBricks.map(function () {
-                    return $(this).css('background-color');
+                let isSameFruit = lastFourBricks.map(function () {
+                    return $(this).attr('data-fruit');
                 }).get().every(function (val, i, arr) {
                     return val === arr[0];
                 });
-                if (isSameColor) {
+                if (isSameFruit) {
                     lastFourBricks.remove();
                     score += 400;
                     $('#score').text('Pontszám: ' + score);
@@ -46,9 +56,28 @@ $(document).ready(function () {
                     if (score >= 5000) {
                         gameRunning = false;
                         $('#startBtn').prop('disabled', false);
+                        
+                        // Save progress and redirect to success scene
+                        const userStr = localStorage.getItem('user');
+                        if (userStr) {
+                            const user = JSON.parse(userStr);
+                            const progressKey = `game_progress_${user.username}`;
+                            const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+                            
+                            // Set Piac location to scene 22 (successful help)
+                            if (!progress.locationIndices) progress.locationIndices = {};
+                            progress.locationIndices['Piac'] = 22;
+                            
+                            localStorage.setItem(progressKey, JSON.stringify(progress));
+                        }
+                        
                         alert('Sikerült a játék!');
+                        
                         // Redirect back to the main game
-                        window.location.href = 'start.html';
+                        setTimeout(function() {
+                            window.location.href = 'start.html';
+                        }, 100);
+                        return;
                     }
                 }
             }
@@ -66,9 +95,24 @@ $(document).ready(function () {
     });
 
     $('#endBtn').on('click', function () {
-        $('#score').text('A végleges pontszámod: ' + score);
-        $('#startBtn').prop('disabled', false);
         gameRunning = false;
+        $('#startBtn').prop('disabled', false);
+        
+        // Save that we're returning from abandoned game and set scene index
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            const progressKey = `game_progress_${user.username}`;
+            const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+            
+            // Set Piac location to scene 20 (angry merchant)
+            if (!progress.locationIndices) progress.locationIndices = {};
+            progress.locationIndices['Piac'] = 20;
+            
+            localStorage.setItem(progressKey, JSON.stringify(progress));
+        }
+        
+        window.location.href = 'start.html';
     });
 
     let selectedBrick = null;
