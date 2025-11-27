@@ -8,19 +8,35 @@ const otthonScenes = [
     {type:'narrative', image: 'pictures/characters/gerald.png',text:'Részleteket sajnos nem tudok, a helyszínen vár Önre Lucas fő őr és majd eligazítja az ügyben.', once: true},
     {type:'narrative', text:'Otthon vagy. Nyugalom vesz körül.'},
     {type:'choices', prompt:'Mit teszel?', choices:[
-        {id:'naplo', label:'Napló vizsgálata', nextScene: 7, requiresItem: 'Napló'},
-        {id:'rest', label:'Pihenés', nextScene: 6}
+        {id:'naplo', label:'Napló vizsgálata (játék)', nextScene: 7, requiresItem: 'Napló', condition: 'notAbandonedGame2'},
+        {id:'rest', label:'Pihenés', nextScene: 25}
     ]},
-    {type:'narrative', text:'Előveszed a naplót amit Charlotte szobájában találtál. A lakaton még mindig ott van.'},
-    {type:'narrative', text:'Szerszámaiddal megpróbálod feltörni a lakatot.'},
-    {type:'narrative', text:'Néhány perc után sikerül kinyitnod a naplót.'},
-    {type:'narrative', text:'A napló belsejében Charlotte feljegyzéseit olvasod. Az első bejegyzések normálisnak tűnnek, napi rutinjáról, Sebastianról és a báró birtokáról ír.'},
-    {type:'narrative', text:'Aztán egy bejegyzés megváltozik a hangneme: "Ma találkoztam vele újra. A Ghostskin-t különös ajánlatot tett. Azt mondja, hogy a szerei segítenek az álmatlanságomon és a fáradtságomon. Nem tudom, higyjek-e neki, de olyan kétségbeesett vagyok már..."'},
-    {type:'narrative', text:'Egy másik bejegyzés: "A bogyók tényleg segítenek. Sebastiannak is adtam belőle, mert láttam rajta a fáradtságot. De valami nem stimmel... egyre furcsább dolgokat látok, hallok..."'},
-    {type:'narrative', text:'Az utolsó bejegyzés: "Nem bírom tovább. A Ghostskin- követel tőlem valamit cserébe. Azt mondja, ha nem fizetek, Sebastian fog... Nem értem mit akar, de félek. Holnap elmegyek a piacra, talán ott találok segítséget..."'},
-    {type:'narrative', text:'A napló további részei üresek. Ez volt Charlotte utolsó bejegyzése.'},
-    {type:'narrative', text:'Most már világos, hogy Charlotte és Sebastian is a Ghostskin áldozatai voltak. Meg kell találnod ezt az embert.', removeItem: 'Napló', setState: {naploRead: true}, nextScene: 6},
     
+    {type:'narrative', text:'Előveszed a naplót és leülsz az asztalhoz hogy megvizsgáld közelebbről.'},
+    {type:'narrative', text:'A napló lakatja zárva van, de szerencsére nálad vannak a szerszámaid amikkel megpróbálod feltörni a lakatot.'},
+    {type:'narrative', text:'Elkezded feltörni a lakatot...', action: 'redirect', redirectUrl: '../game2.html'},
+    
+    // Sikeres napló feltörés (game2Result === 'success')
+    {type:'narrative', text:'Sikerült feltörnöd a napló lakatját! A bonyolult mechanizmus végül engedett.', condition: 'game2Success'},
+    {type:'narrative', text:'A napló kinyílik előtted. Charlotte feljegyzései végre olvashatók...'},
+    {type:'narrative', text:'A napló belsejében Charlotte feljegyzéseit olvasod. Az első bejegyzések egyszerű cselédlányként való mindennapjairól szólnak - Sebastian gondozásáról, a báró birtokán végzett munkáiról, és a nyugodt életéről.'},
+    {type:'narrative', text:'Aztán megjelenik egy új név a bejegyzésekben: "Ma ismét találkoztam Thomas-szal a kertben. Olyan kedves volt velem. Egyre többet beszélgetünk, és érzem, hogy valami különleges van köztünk..."'},
+    {type:'narrative', text:'A következő bejegyzések már nyíltan a szerelmükről szólnak: "Thomas azt mondta, szeret. A szívem úgy dobog, amikor meglátom. Tudom, hogy veszélyes ez, de nem tudok ellenállni az érzéseimnek. Még soha nem éreztem ilyet..."'},
+    {type:'narrative', text:'Aztán a hangnem megváltozik: "Elkezdtem rosszul lenni. Hányingerem van reggelente, és kimaradt a havi vérzésem. Félek... félek attól, amire gondolok. Mit fogok csinálni? Házas sem vagyok..."'},
+    {type:'narrative', text:'Egy újabb bejegyzés: "Már biztos vagyok benne. Terhes vagyok. Thomas gyermekét hordom. De olyan fájdalmaim vannak, amiket nem tudok elviselni. Segítségre van szükségem, de nem mehetek orvoshoz... a báró megtudná..."'},
+    {type:'narrative', text:'Majd egy reményteljes bejegyzés: "Találkoztam valakivel, akit Ghostskin-nek hívnak. Gyógyszert adott nekem a fájdalmaim ellen. Azt mondta, ez segíteni fog. És tényleg! A fájdalmak enyhültek."'},
+    {type:'narrative', text:'Egy bejegyzés ami sötét és kétségbeesett: "A Ghostskin ma odajött hozzám a piacon. Azt mondta, itt az ideje fizetni a kapott segítségért. Balszerencsémre pont velem volt Sebastian is. Adott neki édességet, és elmondta, hogy neki ez ajándék számára. Végül azzal zárta a beszélgetést, hogy hamarosan újra találkozunk... Nem tudom mire utalhatott ezzel..."'},
+    {type:'narrative', text:'Ez az utolsó bejegyzés a naplóban: "Kénytelen leszek eladni valamit a piacon, hogy kifizethessem a Ghostskin követelését. Következő piaci napon érdeklődök, hogy mit tudok eladni."'},
+    {type:'narrative', text:'A napló további részei üresek. Ez volt Charlotte utolsó bejegyzése.'},
+    {type:'narrative', text:'Most már világos a kép: Charlotte és Thomas szerelme, a terhesség, és a Ghostskin zsarolása. De Sebastian-ról nem tudtál meg új információt.', removeItem: 'Napló', setState: {naploRead: true, game2Played: true}, nextScene: 6},
+    
+    // Sikertelen napló feltörés (game2Result === 'failure')  
+    {type:'narrative', text:'Hiába próbálkoztál, a napló lakatja túl bonyolult. Nem sikerült feltörnöd.', condition: 'game2Failure'},
+    {type:'narrative', text:'A szerszámod beletört a lakatba a többszöri próbálkozás során. Már nem tudod kinyitni a naplót.', setState: {game2Played: true, game2Abandoned: true}, nextScene: 6},
+    
+    // Pihenés
+    {type:'narrative', text:'Úgy döntesz, hogy pihensz egy kicsit otthon. A nyomozás fárasztó, és szükséged van az energiára a folytatáshoz.'},
+    {type:'narrative', text:'Pihenés közben átgondolod a nyomozás eddigi részleteit és a következő lépéseidet.', nextScene: 6}
 ];
 
 const otthonBackground = 'pictures/home.png';

@@ -253,6 +253,15 @@
         clearAreas();
         responseActive = false;
         
+        // Check if returning from a redirect (e.g., game2)
+        const redirectFrom = localStorage.getItem('redirectFrom');
+        const redirectIndex = localStorage.getItem('redirectIndex');
+        if (redirectFrom && redirectIndex && redirectFrom === currentLocation) {
+            locationIndices[currentLocation] = parseInt(redirectIndex, 10);
+            localStorage.removeItem('redirectFrom');
+            localStorage.removeItem('redirectIndex');
+        }
+        
         const scenes = locationScenes[currentLocation] || [];
         const idx = locationIndices[currentLocation] || 0;
         
@@ -293,6 +302,72 @@
             }
         }
         
+        // Check for game2Success condition
+        if (s.condition === 'game2Success') {
+            const game2Result = localStorage.getItem('game2Result');
+            if (game2Result !== 'success') {
+                // Skip this scene if game2 wasn't successful
+                locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                renderScene();
+                saveProgress();
+                return;
+            } else {
+                // Clear the flag after showing the scene once
+                localStorage.removeItem('game2Result');
+            }
+        }
+        
+        // Check for game2Failure condition
+        if (s.condition === 'game2Failure') {
+            const game2Result = localStorage.getItem('game2Result');
+            if (game2Result !== 'failure') {
+                // Skip this scene if game2 wasn't a failure
+                locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                renderScene();
+                saveProgress();
+                return;
+            } else {
+                // Clear the flag after showing the scene once
+                localStorage.removeItem('game2Result');
+            }
+        }
+        
+        // Check for game2NotStarted condition
+        if (s.condition === 'game2NotStarted') {
+            const game2Result = localStorage.getItem('game2Result');
+            if (game2Result === 'success' || game2Result === 'failure') {
+                // Skip this scene if game2 was already played
+                locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                renderScene();
+                saveProgress();
+                return;
+            }
+        }
+        
+        // Check for notPlayedGame2 condition
+        if (s.condition === 'notPlayedGame2') {
+            const game2Result = localStorage.getItem('game2Result');
+            if (game2Result === 'success' || game2Result === 'failure' || gameFlags.game2Played) {
+                // Skip this scene if game2 was already played
+                locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                renderScene();
+                saveProgress();
+                return;
+            }
+        }
+        
+        // Check for game2ResultExists condition
+        if (s.condition === 'game2ResultExists') {
+            const game2Result = localStorage.getItem('game2Result');
+            if (!game2Result || (game2Result !== 'success' && game2Result !== 'failure')) {
+                // Skip this scene if game2 result doesn't exist
+                locationIndices[currentLocation] = (locationIndices[currentLocation] || 0) + 1;
+                renderScene();
+                saveProgress();
+                return;
+            }
+        }
+        
         // Mark this scene as seen if it's marked 'once'
         if (s.once) {
             const sceneKey = `${currentLocation}_${idx}`;
@@ -326,8 +401,7 @@
             
             // Add Next button for narrative scenes
             // Exclude: Otthon scene 4 ("Részleteket sajnos nem tudok...")
-            // Exclude: Otthon scene 5 (last fallback scene)
-            const isOtthonExcluded = currentLocation === 'Otthon' && (idx === 4 || idx === 5);
+            const isOtthonExcluded = currentLocation === 'Otthon' && idx === 4;
             const shouldShowNextButton = !isOtthonExcluded;
             
             if (shouldShowNextButton && nextButtonContainer) {
@@ -338,6 +412,9 @@
                 nextBtn.addEventListener('click', () => {
                     // Check if scene has a redirect action
                     if (s.action === 'redirect' && s.redirectUrl) {
+                        // Save current location and next index before redirect
+                        localStorage.setItem('redirectFrom', currentLocation);
+                        localStorage.setItem('redirectIndex', String((locationIndices[currentLocation] || 0) + 1));
                         window.location.href = s.redirectUrl;
                         return;
                     }
@@ -441,6 +518,17 @@
                 if (choice.condition === 'notAbandonedGame') {
                     if (gameFlags.piacMerchantAngry) {
                         return; // Skip this choice if merchant is angry
+                    }
+                }
+                if (choice.condition === 'notAbandonedGame2') {
+                    if (gameFlags.game2Abandoned) {
+                        return; // Skip this choice if game2 was abandoned
+                    }
+                }
+                if (choice.condition === 'notPlayedGame2') {
+                    const game2Result = localStorage.getItem('game2Result');
+                    if (game2Result === 'success' || game2Result === 'failure' || gameFlags.game2Played) {
+                        return; // Skip this choice if game2 was already played
                     }
                 }
                 if (choice.condition === 'baronAvailable') {
