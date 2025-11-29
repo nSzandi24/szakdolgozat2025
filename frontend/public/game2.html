@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napló feltörése</title>
+    <link rel="stylesheet" href="styles/game2.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>A Napló Lakatja</h1>
+        
+        <div class="story-text">
+            A napló lakatja egy különleges mechanizmussal van ellátva. 
+            Minden részét ki kell kapcsolnod a feltöréshez. 
+            2 rétegből áll a lakat - mindkettőt meg kell oldanod!
+        </div>
+
+        <div class="level-info">
+            <span id="currentLevel">1</span>. Réteg / 2
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Teljesített rétegek</div>
+                <div class="stat-value" id="completedLevels">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Lépések</div>
+                <div class="stat-value" id="moves">0</div>
+            </div>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="message" id="message"></div>
+
+        <button class="button hidden" id="nextButton">Következő réteg</button>
+        <button class="button" id="restartButton">Újra kezdem</button>
+        <button class="button hidden" id="finishButton">Befejezés</button>
+    </div>
+
+    <script src="scripts/game2.js"></script>
+</body>
+</html>

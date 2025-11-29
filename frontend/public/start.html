@@ -42,7 +42,10 @@
 			</section>
 
 			<section id="dialogue" class="dialogue">
-				<!-- Narratív szöveg jelenik meg itt -->
+				<!-- Narratív szöveg jelenik meg itt, majd a choices szakasz a végén -->
+				<section id="choices" class="choices">
+					<!-- Választási buborékok jönnek ide -->
+				</section>
 			</section>
 		</div>
 
@@ -50,29 +53,24 @@
 			<!-- Következő gomb ide kerül -->
 		</div>
 
-		<section id="choices" class="choices">
-			<!-- Választási buborékok jönnek ide -->
-		</section>
-
-		<div id="response" class="response hidden" aria-hidden="true">
-			<div class="response-inner">
-				<div id="responseText" class="response-text"></div>
-				<div class="response-actions">
-					<button id="backChoices" class="btn">Vissza a válaszokhoz</button>
-				</div>
-			</div>
+		<div class="controls">
+			<!-- Location buttons will be added here by gameEngine -->
 		</div>
 	</main>
 
-	<script src="../../backend/scripts/info.js"></script>
-	<script src="../../backend/scripts/otthon.js"></script>
-	<script src="../../backend/scripts/varosipark.js"></script>
-	<script src="../../backend/scripts/barobirtoka.js"></script>
-	<script src="../../backend/scripts/charlotte_szoba.js"></script>
-	<script src="../../backend/scripts/nyomornegyed.js"></script>
-	<script src="../../backend/scripts/piac.js"></script>
-	<script src="../../backend/scripts/rendorseg.js"></script>
-	<script src="../../backend/scripts/start.js"></script>
+	<script src="scripts/apiClient.js"></script>
+	<script src="scripts/gameEngine.js"></script>
+	<script>
+		// Logout button handler
+		document.getElementById('logoutBtn').addEventListener('click', async () => {
+			try {
+				await apiClient.logout();
+				window.location.href = 'index.html';
+			} catch (error) {
+				console.error('Logout error:', error);
+			}
+		});
+	</script>
 </body>
 </html>
 
