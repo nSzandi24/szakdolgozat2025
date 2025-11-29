@@ -1,21 +1,19 @@
 const { Sequelize } = require('sequelize');
+const config = require('./config');
 const path = require('path');
 
 // Read DB connection settings from env with sane defaults
-const DB_NAME = 'szakdoga';
-const DB_USER = 'postgres';
-const DB_PASS = 'CiCuska030424';
-const DB_HOST = 'localhost';
-const DB_PORT = 5432;
+const env = process.env.NODE_ENV || 'development';
+const dbConfig = config[env];
 
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
-  host: DB_HOST,
-  port: DB_PORT,
-  dialect: 'postgres',
-  logging: false,
-});
+const sequelize = new Sequelize(dbConfig);
 
 // Initialize models
 const User = require('./models/user')(sequelize);
+const GameSave = require('./models/gameSave')(sequelize);
 
-module.exports = { sequelize, User };
+// Define associations
+User.hasOne(GameSave, { foreignKey: 'userId', as: 'gameSave' });
+GameSave.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+module.exports = { sequelize, User, GameSave };

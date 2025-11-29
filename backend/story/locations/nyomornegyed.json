@@ -1,0 +1,40 @@
+{
+  "locationKey": "nyomornegyed",
+  "displayName": "Nyomornegyed",
+  "backgroundImage": "pictures/nyomornegyed.png",
+  "scenes": [
+    {"sceneId":"warning", "type":"narrative", "text":"Kedves Játékos! A nyomornegyed egy veszélyes hely, ahol sok a bűnözés és a szegénység. E veszélyek miatt a játék során többet nem térhetsz vissza ide, így gondosan dönts el mindent lépésedet.", "startFromHereUnless": ""},
+    {"sceneId":"question_before_entering", "type":"choices", "prompt":"Biztosan be akarsz menni a nyomornegyedbe?", "choices":[
+      {"id":"enter", "label":"Igen, bemegyek.", "nextScene": "nyomornegyed_arrival"},
+      {"id":"stay_out", "label":"Nem, várok még egy kicsit.", "nextScene": "home_peaceful", "location": "otthon", "autoSwitch": true}
+    ]},
+    {"sceneId":"nyomornegyed_arrival","type":"narrative", "text":"Megérkeztél a nyomornegyedbe. A szűk, sötét utcák és a rozoga épületek komor látványt nyújtanak."},
+    {"sceneId":"nyomornegyed_placeholder","type":"narrative", "text":"Kevés ember jár erre, és a levegőben is furcsa szag terjeng."},
+    {"sceneId":"nyomornegyed_meeting", "type":"narrative", "text":"Ahogy sétálsz az utcákon, egy árnyékos alak lép elő a sötétből. Ugyanaz az alak akivel a piacon is találkoztál."},
+    {"sceneId":"nyomornegyed_first_talk", "type":"narrative", "text":"Lám Lám lám... csak találkoztunk újra, detektív. Mit keres itt a nyomornegyedben?", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_answer_murder", "type":"narrative", "text":"Beavatod, hogy egy gyilkosági és elrablás ügyben nyomozol, és a nyomok ide vezettek téged."},
+    {"sceneId":"nyomornegyed_news", "type":"narrative", "text":"Igen hallottam az ügyről, a hírek gyorsan terjednek és sejthető volt, hogyha egy volt detektív nyomozásba kezdett valami fontos ügyről lehet szó.", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_start_info", "type":"narrative", "text":"Nem nehéz kitalálni a nyomok sejtésem szerint a Ghostskin-hez vezettek hamár ide jött. Nekem is van róla egy kevés információm.", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_infos", "type":"narrative", "text":"A Ghostskin egy hírhedt alak a nyomornegyedben. Különös szereket árul, amikről senki sem tudja pontosan honnan szerzi be őket. Sokan félnek tőle, mert nem tudni, hogy kinek mit ad el és milyen következményekkel járhatnak ezek a szerek.", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_offer", "type":"narrative", "text":"De ez lehet az Ön szerencséje detektív. Ha meg akarja találni, tudok segíteni. Van néhány szállítója akik rendszeresen szállítják az árut és a fizetséget is ők hozzák el neki. Ha szeretné akkor meg tudom mondani, hogy hol találja meg őket.", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_clue_choice", "type":"choices", "prompt":"Mit teszel?", "choices":[
+      {"id":"accept_offer", "label":"Elfogadod a segítséget", "nextScene": "nyomornegyed_locations"},
+      {"id":"thank_but_no", "label":"Elutasítod a segítséget", "nextScene": "nyomornegyed_leave"}
+    ]},
+    {"sceneId":"nyomornegyed_locations", "type":"narrative", "text":"Rendben detektív. Figyeljen jól! Ezek a szállítok bármennyire nem tűnnek annak, de nagyon veszélyesek lehetnek. Jól gondolja végig a kérdéseit.", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_following", "type":"narrative", "text":"Kövessen!", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_walk", "type":"narrative", "text":"Némán mentek egymás mellett egy jó darabig, míg el nem értek egy sötét sikátorhoz."},
+    {"sceneId":"nyomornegyed_code", "type":"narrative", "text":"Mielőtt bemennétek a sikátorba kiteszi eléd a kezét ezzel megállít téged. Felemel egy követ a földről és 4-et erősen odaüt a falra, aztán bedobja a sikátorba a követ hogy jó hangosan koppanjon."},
+    {"sceneId":"nyomornegyed_continue", "type":"narrative", "text":"Ez egy kód, hogy tudják az itteniek, hogy nem idegen érkezik így nem kell elmenniük és elbújniuk", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_boys", "type":"narrative", "text":"Ahogy belépsz a sikátorba néhány árnyékos alak lép elő a sötétből. Három fiatal srác akik láthatóan idegesek és feszültek."},
+    {"sceneId":"nyomornegyed_start_with_boys", "type":"narrative", "text":"Uraim nem kell félni! Kedves barátunk csak fel szeretne tenni néhány kérdést a gyilkosságról, az elrablásról és a Ghostskin-ről.", "image":"pictures/characters/nevtelen.png"},
+    {"sceneId":"nyomornegyed_boys_reaction", "type":"narrative", "text":"A három fiú egymásra néz majd az egyikük előlép és várja a kérdéseidet."},
+    {"sceneId":"nyomornegyed_choice", "type":"choices", "prompt":"Mit kérdezel tőlük?", "evidencePromt": "Nyomok kérdezése", "choices":[
+      {"id":"ask_kendo", "label":"A cselédről kérdezel", "nextScene": "answer_kendo"},
+      {"id":"ask_end", "label":"Mindent megtudtál amit szerettél volna, befejezed", "nextScene": "nyomornegyed_ask_ghostskin", "nextScene": "nyomornegyed_bye_boys"}
+    ]},
+    {"sceneId":"answer_kendo", "type":"narrative", "text":"Megmutatod a kendőt és rákérdezel a cseléd gyilkosságára."},
+    {"sceneId":"answer_kendo_2", "type":"narrative", "text":"Hallottunk a gyilkosságról, de ennél többet nem tudunk.", "image":"pictures/characters/nyomornegyed_fiuk1.png", "nextScene":"nyomornegyed_choice"}
+    ]
+    }
+

@@ -1,0 +1,45 @@
+{
+  "locationKey": "charlotteszoba",
+  "displayName": "Charlotte szobája",
+  "backgroundImage": "pictures/charlotte_szoba.png",
+  "scenes": [
+    {"sceneId":"entrance", "type":"narrative", "text":"Thomas-tól kapott kulccsal egyszerűen kinyitod az ajtót.", "startFromHereUnless": ""},
+    {"sceneId":"enter_room", "type":"narrative", "text":"Belépsz Charlotte szobájába. A szoba egyszerű, de rendezett."},
+    {"sceneId":"main_choice", "type":"choices", "prompt":"Mit teszel?", "choices":[
+      {"id":"investigate", "label":"Helyszín átnézése", "nextScene": "investigation_intro"},
+      {"id":"analyze", "label":"Tárgyak elemzése", "nextScene": "evidence_selection", "condition": "investigationCompletedCharlotte"}
+    ]},
+    {"sceneId":"investigation_intro", "type":"narrative", "text": "Kedves Játékos! A Következő képet használva tudod átnézni a helyszínt és nyomokat keresni. Jól nézd meg a környezetet, és igyekezz minél több nyomot megtalálni és megjegyezni! Ezután egy listából ki tudod választani a nyomokat amik a helyszínen voltak, és a hasznosakat el tudod rakni a készletedbe."},
+    {"sceneId":"investigation_image", "type":"investigation", "image": "pictures/nyom2.png", "buttonLabel": "Helyszín átnézésének befejezése", "setState": {"investigationCompletedCharlotte": true}, "nextScene": "main_choice"},
+    {"sceneId":"evidence_selection", "type":"choices", "prompt":"Mit találsz?", "choices":[
+      {"id":"nyom1", "label":"Ágy", "nextScene": "useless_item"},
+      {"id":"nyom2", "label":"Gyapjú takaró", "nextScene": "useless_item"},
+      {"id":"nyom3", "label":"Párna", "nextScene": "useless_item"},
+      {"id":"nyom4", "label":"Bogyók", "nextScene": "strange_berries"},
+      {"id":"nyom5", "label":"Gyertya", "nextScene": "useless_item"},
+      {"id":"nyom6", "label":"Foltok", "nextScene": "stains"},
+      {"id":"nyom7", "label":"Fazék", "nextScene": "useless_item"},
+      {"id":"nyom8", "label":"Tál", "nextScene": "useless_item"},
+      {"id":"nyom9", "label":"Vászon ruha", "nextScene": "useless_item"},
+      {"id":"nyom10", "label":"Fakanál", "nextScene": "useless_item"},
+      {"id":"nyom11", "label":"Vödör", "nextScene": "useless_item"},
+      {"id":"nyom12", "label":"Mosdótál", "nextScene": "useless_item"},
+      {"id":"nyom13", "label":"Tinta foltok", "nextScene": "ink_stains"},
+      {"id":"nyom14", "label":"Kendő", "nextScene": "useless_item"},
+      {"id":"nyom15", "label":"Faláb", "nextScene": "useless_item"},
+      {"id":"nyom16", "label":"Szalmaszál", "nextScene": "useless_item"},
+      {"id":"nyom17", "label":"Láda", "nextScene": "chest_found"},
+      {"id":"finish", "label":"Nyomok keresésének befejezése", "nextScene": "investigation_complete"}
+    ]},
+    {"sceneId":"useless_item", "type":"narrative", "text":"Ez a tárgy nem érdekes a nyomozás ügyében.", "nextScene": "evidence_selection"},
+    {"sceneId":"chest_found", "type":"narrative", "text":"A ládát átkutatva találsz benne egy naplót. Van rajta egy lakat, de kulcsod nincs hozzá."},
+    {"sceneId":"diary_obtained", "type":"narrative", "text":"Célszerű lenne hazamenned és otthon megpróbálnod feltörni a lakatot a naplón az otthoni szerszámjaiddal.", "addItem": "Napló", "setState": {"hasNaplo": true}, "nextScene": "evidence_selection"},
+    {"sceneId":"strange_berries", "type":"narrative", "text":"Ezek gyógyszereknek tűnnek. Tudásod alapján tudod, hogy ilyen nem lehet szerezni gyógyfüveseknél sem. Talán emiatt szökött ki az egyik éjszaka."},
+    {"sceneId":"berries_lead", "type":"narrative", "text":"Célszerű lenne elmenned a nyomornegyedbe utána nézni ennek.", "addItem": "Furcsa bogyók", "location": "Nyomornegyed", "nextScene": "evidence_selection"},
+    {"sceneId":"ink_stains", "type":"narrative", "text":"Ezek tintafoltok az asztalon. Úgy tűnik, mintha valaki írt volna valamit, de az a könyv nincsen az asztalon.", "nextScene": "evidence_selection"},
+    {"sceneId":"stains", "type":"narrative", "text":"Ezek a foltok olyan mintha vezetne valahova. Be az ágy alá."},
+    {"sceneId":"under_bed", "type":"narrative", "text":"Az ágy alatt találsz egy kis zacskót melyben néhány cukorkának tűnő dolgot találsz. A zacskón van egy jel ami a Ghostskin-re utal. A cukorkák hasonlítanak arra amit a báró említett.", "addItem": "Furcsa cukorkák", "nextScene": "evidence_selection"},
+    {"sceneId":"investigation_complete", "type":"narrative", "text":"Ideje minnél gyorsabban elmenned a helyszínről mielőtt valaki meglátna. Lucas fő őrnek lesz valamilyen információja erről a Ghostskin-ről.", "nextScene":"main_choice",  "setState": {"ghostskinInfoNeeded": true}}
+  ]
+}
+

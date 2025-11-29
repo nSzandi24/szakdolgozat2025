@@ -18,8 +18,8 @@ async function login(data) {
             return { success: false, message: 'Hibás email vagy jelszó.' };
         }
 
-        // Sikeres bejelentkezés - visszaadjuk a felhasználó alapadatait (nem a jelszóhash-t)
-        return { success: true, user: { id: user.id, username: user.username, email: user.email } };
+        // Sikeres bejelentkezés - visszaadjuk a teljes user objektumot (toJSON már eltávolítja a jelszót)
+        return { success: true, user: user.toJSON() };
     } catch (err) {
         console.error('Auth verify error:', err);
         return { success: false, message: 'Szerverhiba a bejelentkezés során.' };

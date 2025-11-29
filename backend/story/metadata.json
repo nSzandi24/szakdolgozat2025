@@ -1,0 +1,50 @@
+{
+  "locations": {
+    "otthon": {
+      "key": "otthon",
+      "displayName": "Otthon",
+      "backgroundImage": "pictures/home.png",
+      "initialLocation": true
+    },
+    "varosipark": {
+      "key": "varosipark",
+      "displayName": "Városi park",
+      "backgroundImage": "pictures/varosipark.png"
+    },
+    "barobirtoka": {
+      "key": "barobirtoka",
+      "displayName": "Báró birtoka",
+      "backgroundImage": "pictures/barobirtoka.png"
+    },
+    "piac": {
+      "key": "piac",
+      "displayName": "Piac",
+      "backgroundImage": "pictures/piac.png"
+    },
+    "rendorseg": {
+      "key": "rendorseg",
+      "displayName": "Városi őrség",
+      "backgroundImage": "pictures/rendorseg.png"
+    },
+    "charlotteszoba": {
+      "key": "charlotteszoba",
+      "displayName": "Charlotte szobája",
+      "backgroundImage": "pictures/charlotte_szoba.png"
+    },
+    "nyomornegyed": {
+      "key": "nyomornegyed",
+      "displayName": "Nyomornegyed",
+      "backgroundImage": "pictures/nyomornegyed.png"
+    }
+  },
+  "locationOrder": [
+    "otthon",
+    "varosipark",
+    "barobirtoka",
+    "piac",
+    "rendorseg",
+    "charlotteszoba",
+    "nyomornegyed"
+  ]
+}
+
