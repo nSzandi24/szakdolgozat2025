@@ -35,7 +35,9 @@
     {"sceneId": "diary_lockpick_abandoned", "type":"narrative", "text":"A szerszámod beletört a lakatba a többszöri próbálkozás során. Már nem tudod kinyitni a naplót.", "setState": {"game2Played": true, "game2Abandoned": true}, "nextScene": "home_peaceful"},
     
     {"sceneId": "rest_at_home", "type":"narrative", "text":"Úgy döntesz, hogy pihensz egy kicsit otthon. A nyomozás fárasztó, és szükséged van az energiára a folytatáshoz."},
-    {"sceneId": "rest_reflection", "type":"narrative", "text":"Pihenés közben átgondolod a nyomozás eddigi részleteit és a következő lépéseidet.", "nextScene": "home_peaceful"}
+    {"sceneId": "rest_reflection", "type":"narrative", "text":"Pihenés közben átgondolod a nyomozás eddigi részleteit és a következő lépéseidet.", "nextScene": "home_peaceful"},
+
+    {"sceneId": "home_nyomornegyed", "type":"narrative", "text":"Visszatérsz a nyomornyedeből a kapott avagy hiányos információiddal. Ideje volna megoldanod az ügyet, és átadnod a nyomozás eredményeit Lucas fő őrnek."}
   ]
 }
 
