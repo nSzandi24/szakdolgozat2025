@@ -52,6 +52,7 @@ module.exports = (sequelize) => {
         investigationCompleted: this.investigationCompleted,
         lucasDialogueCompleted: this.lucasDialogueCompleted,
         lucasAvailable: this.lucasAvailable,
+        nyomornegyed_decision: this.nyomornegyed_decision,
         lastUpdated: this.updatedAt,
       };
     }
@@ -114,6 +115,11 @@ module.exports = (sequelize) => {
       lucasAvailable: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
+      },
+      nyomornegyed_decision: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'accepted_help',
       },
     },
     {

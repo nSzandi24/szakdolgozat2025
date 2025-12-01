@@ -458,6 +458,19 @@
 
         // Special case: if the current scene is 'case_solved_question' and the player selects 'Igen, megoldom az ügyet.'
         const currentScene = getCurrentScene();
+        // Nyomornegyed döntés mentése accepted_help/declined_help értékkel
+        if (currentScene && currentScene.sceneId === 'nyomornegyed_clue_choice') {
+            let decision = null;
+            if (choice.id === 'accept_offer') {
+                decision = 'accepted_help';
+            } else if (choice.id === 'thank_but_no') {
+                decision = 'declined_help';
+            }
+            if (decision) {
+                await apiClient.updateGameState({ nyomornegyed_decision: decision });
+            }
+        }
+
         if (currentScene && currentScene.sceneId === 'case_solved_question' && choice.label === 'Igen, megoldom az ügyet.') {
             await window.startSolutionFlow();
         } else if (choice.autoSwitch && choice.location) {

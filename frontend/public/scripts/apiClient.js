@@ -21,7 +21,7 @@ class APIClient {
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      credentials: 'same-origin', // Include cookies
+      credentials: 'include', // Always include cookies, even cross-origin
     };
 
     try {
@@ -208,4 +208,5 @@ class APIClient {
 
 // Export singleton instance
 const apiClient = new APIClient();
+window.apiClient = apiClient;
 

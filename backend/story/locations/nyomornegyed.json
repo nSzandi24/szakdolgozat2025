@@ -18,8 +18,8 @@
     {"sceneId":"nyomornegyed_infos", "type":"narrative", "text":"A Ghostskin egy hírhedt alak a nyomornegyedben. Különös szereket árul, amikről senki sem tudja pontosan honnan szerzi be őket. Sokan félnek tőle, mert nem tudni, hogy kinek mit ad el és milyen következményekkel járhatnak ezek a szerek.", "image":"pictures/characters/nevtelen.png"},
     {"sceneId":"nyomornegyed_offer", "type":"narrative", "text":"De ez lehet az Ön szerencséje detektív. Ha meg akarja találni, tudok segíteni. Van néhány szállítója akik rendszeresen szállítják az árut és a fizetséget is ők hozzák el neki. Ha szeretné akkor meg tudom mondani, hogy hol találja meg őket.", "image":"pictures/characters/nevtelen.png"},
     {"sceneId":"nyomornegyed_clue_choice", "type":"choices", "prompt":"Mit teszel?", "choices":[
-      {"id":"accept_offer", "label":"Elfogadod a segítséget", "nextScene": "nyomornegyed_locations"},
-      {"id":"thank_but_no", "label":"Elutasítod a segítséget", "nextScene": "nyomornegyed_say_no"}
+      {"id":"accept_offer", "label":"Elfogadod a segítséget", "nextScene": "nyomornegyed_locations", "setGameState": {"nyomornegyed_decision": "accepted_help"} },
+      {"id":"thank_but_no", "label":"Elutasítod a segítséget", "nextScene": "nyomornegyed_say_no", "setGameState": {"nyomornegyed_decision": "declined_help"} }
     ]},
     {"sceneId":"nyomornegyed_locations", "type":"narrative", "text":"Rendben detektív. Figyeljen jól! Ezek a szállítok bármennyire nem tűnnek annak, de nagyon veszélyesek lehetnek. Jól gondolja végig a kérdéseit.", "image":"pictures/characters/nevtelen.png"},
     {"sceneId":"nyomornegyed_following", "type":"narrative", "text":"Kövessen!", "image":"pictures/characters/nevtelen.png"},
