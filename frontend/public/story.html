@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Történet vége</title>
-		
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Történet vége</title>
+	<link rel="stylesheet" type="text/css" href="styles/story.css">
 </head>
 <body>
-		<div id="endingText"></div>
-		<script src="scripts/apiClient.js"></script>
-		<script src="scripts/storyEnding.js"></script>
+	<div class="ending-box">
+		<button id="logoutBtn" class="logout-btn">Kijelentkezés</button>
+        <button id="scoreBtn" class="logout-btn">Pontszámom</button>
+		<h1>Történet vége</h1>
+		<div class="ending-section" id="endingText"></div>
+	</div>
+	<script src="scripts/apiClient.js"></script>
+	<script src="scripts/storyEnding.js"></script>
 </body>
 </html>

@@ -1,18 +1,58 @@
-body 
-    { 
-        font-family: Arial, sans-serif; 
-        background: #f7f7f7; 
-        margin: 0; 
-        padding: 0; 
-    }
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background: url("../pictures/information.png") no-repeat center center fixed;
+    background-size: cover;
+}
 
-#endingText 
-{ 
-    max-width: 600px; 
-    margin: 100px auto; 
-    background: #fff; 
-    padding: 2em; 
-    border-radius: 10px; 
-    box-shadow: 0 2px 8px #0001; 
-    font-size: 1.2em; 
+h1 {
+    color: black;
+}
+
+.ending-box h2 {
+    font-weight: normal;
+}
+
+button, .logout-btn {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 24px;
+}
+
+.logout-btn {
+    position:fixed;
+    top:12px;
+    right:12px;
+    background:#E0D1A2; /* match .main-box background */
+    color:#000;
+    border:2px solid #000; /* match .main-box border */
+    padding:10px 14px;
+    border-radius:16px; /* match .main-box radius */
+    cursor:pointer;
+    box-shadow:0 4px 24px rgba(0,0,0,0.2); /* match .main-box shadow */
+    font-style:italic; /* match .main-box text style */
+}
+
+.ending-box {
+    border: 2px solid #000;
+    background: #E0D1A2;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+    padding: 40px 32px;
+    min-width: 520px;
+    max-width: 600px;
+    font-style: italic;
+    position: relative;
+}
+
+.ending-section {
+    margin-top: 24px;
+    font-size: 20px;
+    color: black;
 }
