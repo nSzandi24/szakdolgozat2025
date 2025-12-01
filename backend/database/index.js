@@ -12,11 +12,13 @@ const sequelize = new Sequelize(dbConfig);
 const User = require('./models/user')(sequelize);
 const GameSave = require('./models/gameSave')(sequelize);
 const Solution = require('./models/solution')(sequelize);
+const Point = require('./models/point')(sequelize);
 
 // Define associations
 User.hasOne(GameSave, { foreignKey: 'userId', as: 'gameSave' });
 GameSave.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasMany(Solution, { foreignKey: 'userId', as: 'solutions' });
 Solution.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Point.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-module.exports = { sequelize, User, GameSave, Solution };
+module.exports = { sequelize, User, GameSave, Solution, Point };

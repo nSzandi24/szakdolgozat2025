@@ -73,6 +73,10 @@ $(document).ready(function () {
                             window.location.href = 'start.html';
                         });
                         
+                        if (window.apiClient && window.apiClient.completeGame) {
+                            window.apiClient.completeGame('game1').catch(e => console.warn('Nem sikerült menteni a game1_completed állapotot:', e));
+                        }
+                        
                         return;
                     }
                 }

@@ -14,6 +14,8 @@ module.exports = (sequelize) => {
         investigationCompleted: false,
         lucasDialogueCompleted: false,
         lucasAvailable: true,
+        game1_completed: false,
+        game2_completed: false,
       };
     }
 
@@ -53,6 +55,8 @@ module.exports = (sequelize) => {
         lucasDialogueCompleted: this.lucasDialogueCompleted,
         lucasAvailable: this.lucasAvailable,
         nyomornegyed_decision: this.nyomornegyed_decision,
+        game1_completed: this.game1_completed,
+        game2_completed: this.game2_completed,
         lastUpdated: this.updatedAt,
       };
     }
@@ -120,6 +124,14 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'accepted_help',
+      },
+      game1_completed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      game2_completed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {

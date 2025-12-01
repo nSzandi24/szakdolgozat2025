@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pontszámom</title>
+  <link rel="stylesheet" type="text/css" href="styles/score.css">
+</head>
+<body>
+  <div class="ending-box">
+    <div class="button-row">
+      <button onclick="window.location.href='story.html'" class="header-btn">Vissza</button>
+      <button id="logoutBtn" class="header-btn">Kijelentkezés</button>
+    </div>
+    <h1>Pontszámom</h1>
+    <div id="scoreContainer"></div>
+  </div>
+  <script src="scripts/apiClient.js"></script>
+  <script src="scripts/score.js"></script>
+  <script>
+    document.getElementById('logoutBtn').onclick = async function() {
+      try { await window.apiClient.logout(); } catch(e){}
+      window.location.href = 'login.html';
+    };
+  </script>
+</body>
+</html>

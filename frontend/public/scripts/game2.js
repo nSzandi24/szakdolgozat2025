@@ -131,17 +131,9 @@
         if (completedLevels === 2) {
             // Sikeres játék - visszatérés a start.html-hez sikeres üzenettel
             console.log('Setting game2 success via API');
-            fetch('/api/game/progress', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ locationKey: 'otthon', sceneIndex: 10 })
-            }).then(() => {
-                window.location.href = 'start.html';
-            }).catch(error => {
-                console.error('Error saving game progress:', error);
-                window.location.href = 'start.html';
-            });
+            if (window.apiClient && window.apiClient.completeGame) {
+                window.apiClient.completeGame('game2').catch(e => console.warn('Nem sikerült menteni a game2_completed állapotot:', e));
+            }
         } else {
             // Sikertelen játék - visszatérés vesztes üzenettel
             console.log('Setting game2 failure via API');

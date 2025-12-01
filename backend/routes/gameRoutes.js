@@ -358,5 +358,58 @@ router.delete('/reset', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/game/points
+ * Get user's total points
+ */
+router.get('/points', async (req, res) => {
+  try {
+    const userId = req.userId;
+    const points = await solutionService.getUserPoints(userId);
+    res.json({ success: true, points });
+  } catch (error) {
+    console.error('Error getting points:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a pontok lekérésekor.' });
+  }
+});
+
+/**
+ * GET /api/game/solution
+ * Get user's last submitted solution
+ */
+router.get('/solution', async (req, res) => {
+  try {
+    const userId = req.userId;
+    const solution = await solutionService.getLastSolution(userId);
+    res.json({ success: true, solution });
+  } catch (error) {
+    console.error('Error getting solution:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a megoldás lekérésekor.' });
+  }
+});
+
+/**
+ * POST /api/game/complete
+ * Set game1_completed or game2_completed to true
+ * Body: { game: 'game1' | 'game2' }
+ */
+router.post('/complete', async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { game } = req.body;
+    if (game !== 'game1' && game !== 'game2') {
+      return res.status(400).json({ success: false, message: 'Hibás játék azonosító.' });
+    }
+    const updates = {};
+    if (game === 'game1') updates.game1_completed = true;
+    if (game === 'game2') updates.game2_completed = true;
+    await gameStateService.updateGameState(userId, updates);
+    res.json({ success: true, message: `${game} completed állapot frissítve.` });
+  } catch (error) {
+    console.error('Error setting game completed:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a játék állapot frissítésekor.' });
+  }
+});
+
 module.exports = router;
 

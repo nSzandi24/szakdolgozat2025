@@ -182,6 +182,15 @@ class APIClient {
     return this.delete('/api/game/reset');
   }
 
+  /**
+   * Jelöld késznek az adott játékot (game1 vagy game2)
+   * @param {'game1'|'game2'} game
+   */
+  async completeGame(game) {
+    if (game !== 'game1' && game !== 'game2') throw new Error('Hibás játék azonosító');
+    return this.post('/api/game/complete', { game });
+  }
+
   // ===== Auth API =====
 
   /**
