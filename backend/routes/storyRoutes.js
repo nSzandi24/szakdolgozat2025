@@ -1,5 +1,27 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+const fs = require('fs');
+/**
+ * GET /api/story/solution
+ * Serve the solution.json file (question flow)
+ */
+router.get('/solution', (req, res) => {
+  const solutionPath = path.join(__dirname, '../story/locations/solution.json');
+  fs.readFile(solutionPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading solution.json:', err);
+      return res.status(404).json({ success: false, message: 'solution.json not found' });
+    }
+    try {
+      const json = JSON.parse(data);
+      res.json(json);
+    } catch (parseErr) {
+      console.error('Error parsing solution.json:', parseErr);
+      res.status(500).json({ success: false, message: 'Invalid solution.json' });
+    }
+  });
+});
 const storyService = require('../services/storyService');
 const gameStateService = require('../services/gameStateService');
 const { authMiddleware } = require('../middleware/authMiddleware');

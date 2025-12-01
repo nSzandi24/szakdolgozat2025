@@ -2,12 +2,15 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Add currentSceneIds column
-    await queryInterface.addColumn('game_saves', 'current_scene_ids', {
-      type: Sequelize.JSONB,
-      defaultValue: {},
-      allowNull: true,
-    });
+    // Add currentSceneIds column if it does not exist
+    const table = await queryInterface.describeTable('game_saves');
+    if (!table['current_scene_ids']) {
+      await queryInterface.addColumn('game_saves', 'current_scene_ids', {
+        type: Sequelize.JSONB,
+        defaultValue: {},
+        allowNull: true,
+      });
+    }
 
     // Migrate existing data: copy locationIndices to currentSceneIds
     // This won't work perfectly since we're changing from indexes to IDs,

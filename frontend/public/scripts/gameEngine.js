@@ -1,9 +1,107 @@
+// (function() { // Removed duplicate wrapper
+    
+
 /**
  * Game Engine - Manages game state and rendering via backend API
  */
 
 (async function() {
     // Game state (loaded from backend)
+        // Solution question flow using solution.json (must be after all function/var declarations)
+        async function startSolutionFlow() {
+            clearAreas();
+            let answers = {};
+            let questions = [];
+            console.log('[startSolutionFlow] Triggered');
+            try {
+                // Try to load questions from solution.json
+                const res = await fetch('/api/story/solution');
+                if (!res.ok) throw new Error('solution.json not found');
+                questions = await res.json();
+                console.log('[startSolutionFlow] Loaded questions:', questions);
+            } catch (e) {
+                console.error('[startSolutionFlow] Error loading solution.json:', e);
+                dialogueEl.innerHTML = '<p>Nem található a kérdéssor (solution.json).</p>';
+                return;
+            }
+            let idx = 0;
+
+            async function askNext() {
+                clearAreas();
+                console.log('[askNext] idx:', idx, 'questions.length:', questions.length);
+                if (idx >= questions.length) {
+                    // Validate all required keys are present
+                    const requiredKeys = ['weapon', 'killer', 'motive', 'kidnapper', 'kidnapMotive', 'ghostskin'];
+                    const missing = requiredKeys.filter(k => !(k in answers));
+                    if (missing.length > 0) {
+                        dialogueEl.innerHTML = `<p>Hiányzó válasz(ok): ${missing.join(', ')}. Kérjük, válaszolj minden kérdésre!</p>`;
+                        console.warn('[askNext] Missing required answers:', missing);
+                        return;
+                    }
+                    // All answered, save to backend
+                    try {
+                        // Check authentication by making a lightweight authenticated request
+                        const stateResp = await apiClient.getGameState?.();
+                        if (stateResp && stateResp.success === false && stateResp.message && stateResp.message.includes('jelentkezzen be')) {
+                            dialogueEl.innerHTML = '<p>A megoldás mentéséhez be kell jelentkezni. Átirányítás a bejelentkezéshez...</p>';
+                            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                            return;
+                        }
+                        await apiClient.saveSolution(answers);
+                        console.log('[askNext] Solution saved:', answers);
+                        window.location.href = 'story.html';
+                    } catch (e) {
+                        if (e.message && e.message.includes('Nincs hitelesítve')) {
+                            dialogueEl.innerHTML = '<p>A megoldás mentéséhez be kell jelentkezni. Átirányítás a bejelentkezéshez...</p>';
+                            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                        } else {
+                            console.error('[askNext] Error saving solution:', e);
+                            dialogueEl.innerHTML = '<p>Hiba történt a mentéskor.</p>';
+                        }
+                    }
+                    return;
+                }
+                const q = questions[idx];
+                console.log('[askNext] Showing question:', q);
+                const qDiv = document.createElement('div');
+                qDiv.innerHTML = `<p style=\"font-weight:bold;\">${q.text}</p>`;
+
+                let options = [];
+                if (Array.isArray(q.options) && q.options.length > 0) {
+                    options = q.options;
+                } else if (q.type === 'item') {
+                    options = gameState && gameState.collectedItems ? gameState.collectedItems : [];
+                }
+                console.log('[askNext] Options:', options);
+
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.textContent = opt;
+                    btn.className = 'choice-bubble';
+                    btn.onclick = () => {
+                        answers[q.key] = opt;
+                        idx++;
+                        askNext();
+                    };
+                    qDiv.appendChild(btn);
+                });
+
+                choicesEl.appendChild(qDiv);
+            }
+
+            askNext();
+        }
+
+        // Attach to a global for triggering from UI
+        window.startSolutionFlow = startSolutionFlow;
+
+        // Optionally, add a handler for a button with id 'solveCaseBtn'
+        document.addEventListener('DOMContentLoaded', function() {
+            const solveBtn = document.getElementById('solveCaseBtn');
+            if (solveBtn) {
+                solveBtn.addEventListener('click', startSolutionFlow);
+            }
+        });
     let gameState = null;
     let currentLocation = null;
     let locationScenes = null;
@@ -357,7 +455,12 @@
         responseActive = true;
 
         // Ha a choice autoSwitch és location mezőt tartalmaz, válts helyszínt
-        if (choice.autoSwitch && choice.location) {
+
+        // Special case: if the current scene is 'case_solved_question' and the player selects 'Igen, megoldom az ügyet.'
+        const currentScene = getCurrentScene();
+        if (currentScene && currentScene.sceneId === 'case_solved_question' && choice.label === 'Igen, megoldom az ügyet.') {
+            await window.startSolutionFlow();
+        } else if (choice.autoSwitch && choice.location) {
             const locationKey = getLocationKeyFromName(choice.location);
             await switchLocation(locationKey);
             // Ha nextScene is van, lépj arra a jelenetre az új helyszínen

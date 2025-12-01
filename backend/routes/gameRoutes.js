@@ -1,8 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const { authMiddleware } = require('../middleware/authMiddleware');
+router.use(authMiddleware);
 const gameStateService = require('../services/gameStateService');
 const storyService = require('../services/storyService');
-const { authMiddleware } = require('../middleware/authMiddleware');
+const solutionService = require('../services/solutionService');
+/**
+ * POST /api/game/solution
+ * Save player's answers to the case-solving questions
+ * Body: { weapon, killer, motive, kidnapper, kidnapMotive, ghostskin }
+ */
+router.post('/solution', async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { weapon, killer, motive, kidnapper, kidnapMotive, ghostskin } = req.body;
+    if (!weapon || !killer || !motive || !kidnapper || !kidnapMotive || !ghostskin) {
+      return res.status(400).json({ success: false, message: 'Minden válasz kötelező.' });
+    }
+    await solutionService.saveSolution(userId, { weapon, killer, motive, kidnapper, kidnapMotive, ghostskin });
+    res.json({ success: true, message: 'Megoldás sikeresen elmentve.' });
+  } catch (error) {
+    console.error('Error saving solution:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a megoldás mentésekor.' });
+  }
+});
 
 // All game routes require authentication
 router.use(authMiddleware);

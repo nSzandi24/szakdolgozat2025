@@ -1,11 +1,13 @@
-/**
- * API Client for game backend communication
- * Handles all fetch requests with automatic cookie handling
- */
-
 class APIClient {
   constructor(baseURL = '') {
     this.baseURL = baseURL;
+  }
+
+  /**
+   * Save solution answers
+   */
+  async saveSolution(answers) {
+    return this.post('/api/game/solution', answers);
   }
 
   /**

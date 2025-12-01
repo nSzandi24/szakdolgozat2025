@@ -9,10 +9,13 @@
     {"sceneId": "enter_lucas_room", "type":"narrative", "text":"Belépsz a szobába ahol Lucas fő őr éppen papírokat nézeget."},
     {"sceneId": "lucas_greets", "type":"narrative", "text":"Lucas felnéz mikor belépsz és barátságosan üdvözöl."},
     {"sceneId": "main_menu", "type":"choices", "prompt":"Mit teszel?", "choices":[
-      {"id":"solution", "label":"Ügy megoldása", "nextScene": "case_solved"},
+      {"id":"solution", "label":"Ügy megoldása", "nextScene": "case_solved_question"},
       {"id":"sapadt", "label":"Információ gyűjtés a Ghostskin-ról", "nextScene": "ask_ghostskin", "condition": "ghostskinInfoNeeded"}
     ]},
-    {"sceneId": "case_solved", "type":"narrative", "text":"Lucas fő őr gratulál neked az ügy megoldásához. Köszönetet mond a segítségedért és elmondja, hogy a város hálás a munkádért."},
+    {"sceneId": "case_solved_question", "type":"choices", "prompt":"Kedves Játékos! Biztos vagy benne hogy elég bizonyítékot szereztél és megoldod az ügyet? Ezzel a döntéssel véget ér a játék és meglátod a befejezést.", "choices":[
+      {"id":"yes", "label":"Igen, megoldom az ügyet."},
+      {"id":"no", "label":"Még nem vagyok biztos benne.", "nextScene": "main_menu"}
+    ]},
     {"sceneId": "ask_ghostskin", "type":"narrative", "text":"Elmondod Lucas fő őrnek, hogy a nyomozás során rábukkantál egy Ghostskin nevű személyre, aki kapcsolatban állhat az üggyel."},
     {"sceneId": "lucas_thinks", "type":"narrative", "text":"Lucas elgondolkodik és bólint."},
     {"sceneId": "ghostskin_info_1", "type":"narrative", "text":"Igen, a Ghostskin... Azt a nevet már hallottam. Egy furcsa alak, aki a nyomornegyedben tartózkodik. Sokan félnek tőle, mert különös szereket árul.", "image":"pictures/characters/lucas.png"},
