@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Felhasználók pontszámai</title>
+  <link rel="stylesheet" type="text/css" href="styles/score.css">
+  <style>
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+      background: #fffbe6;
+    }
+    .user-table th, .user-table td {
+      border: 1px solid #aaa;
+      padding: 10px 16px;
+      font-size: 18px;
+      text-align: left;
+    }
+    .user-table th {
+      background: #e0d1a2;
+      font-weight: bold;
+    }
+    .user-table tr:nth-child(even) {
+      background: #f9f6e7;
+    }
+    .user-table tr.highlight {
+      background: #d1e7ff !important;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="ending-box">
+    <h1>Felhasználók pontszámai</h1>
+    <table class="user-table" id="userTable">
+      <thead>
+        <tr><th>Helyezés</th><th>Felhasználónév</th><th>Pontszám</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="button-row">
+      <button onclick="window.location.href='score.html'" class="header-btn">Vissza</button>
+      <button id="logoutBtn" class="header-btn">Kijelentkezés</button>
+    </div>
+  <script src="scripts/apiClient.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const tableBody = document.querySelector('#userTable tbody');
+      try {
+        const res = await window.apiClient.get('/api/game/all-points');
+        if (!res.success) throw new Error(res.message || 'Hiba');
+        const users = res.users || [];
+        // Saját user kiemelése (username alapján)
+        const myUsername = localStorage.getItem('username') || '';
+        users.sort((a, b) => b.points - a.points);
+        users.forEach((u, idx) => {
+          const tr = document.createElement('tr');
+          if (u.username === myUsername) tr.classList.add('highlight');
+          tr.innerHTML = `<td>${idx + 1}.</td><td>${u.username || ''}</td><td>${u.points}</td>`;
+          tableBody.appendChild(tr);
+        });
+      } catch (e) {
+        tableBody.innerHTML = '<tr><td colspan="3">Nem sikerült lekérni a pontokat.</td></tr>';
+      }
+    });
+  </script>
+  <script>
+    document.getElementById('logoutBtn').onclick = async function() {
+      try { await window.apiClient.logout(); } catch(e){}
+      window.location.href = 'login.html';
+    };
+  </script>
+</body>
+</html>

@@ -411,5 +411,35 @@ router.post('/complete', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/game/all-points
+ * List all users and their points
+ */
+router.get('/all-points', async (req, res) => {
+  try {
+    // Csak admin vagy tanári jogosultsággal lenne érdemes, de most minden bejelentkezett user láthatja
+    const { User, Point } = require('../database');
+    const users = await User.findAll({ attributes: ['id', 'username'] });
+    const points = await Point.findAll();
+    // Mapeljük userId -> legnagyobb pontszám (ha több Point rekord lenne)
+    // (Jelenleg 1 rekord/user, de a jövőben lehet több is)
+    const userMaxPoints = {};
+    points.forEach(p => {
+      if (!userMaxPoints[p.userId] || p.points > userMaxPoints[p.userId]) {
+        userMaxPoints[p.userId] = p.points;
+      }
+    });
+    const result = users.map(u => ({
+      id: u.id,
+      username: u.username,
+      points: userMaxPoints[u.id] || 0
+    }));
+    res.json({ success: true, users: result });
+  } catch (error) {
+    console.error('Error listing all points:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a pontok lekérésekor.' });
+  }
+});
+
 module.exports = router;
 

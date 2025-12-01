@@ -10,6 +10,7 @@
   <div class="ending-box">
     <div class="button-row">
       <button onclick="window.location.href='story.html'" class="header-btn">Vissza</button>
+      <button id="leaderboardBtn" class="header-btn">Ranglista</button>
       <button id="logoutBtn" class="header-btn">Kijelentkezés</button>
     </div>
     <h1>Pontszámom</h1>
@@ -21,6 +22,9 @@
     document.getElementById('logoutBtn').onclick = async function() {
       try { await window.apiClient.logout(); } catch(e){}
       window.location.href = 'login.html';
+    };
+    document.getElementById('leaderboardBtn').onclick = function() {
+      window.location.href = 'static.html';
     };
   </script>
 </body>

@@ -113,3 +113,12 @@ button, .logout-btn {
   padding: 16px;
   border: 2px solid #000;
 }
+.user-table tr.highlight {
+  background: #d1e7ff !important;
+  font-weight: bold;
+}
+/* Kiemelt sor a ranglistában (saját user) */
+tr.highlight, .user-table tr.highlight, tbody tr.highlight {
+  background: #d1e7ff !important;
+  font-weight: bold;
+}
