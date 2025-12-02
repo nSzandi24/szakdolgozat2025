@@ -1,18 +1,21 @@
 document.addEventListener('DOMContentLoaded', async function() {
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    if (leaderboardBtn) {
+      leaderboardBtn.addEventListener('click', function() {
+        window.location.href = 'static.html';
+      });
+    }
   const container = document.getElementById('scoreContainer');
   try {
-    // Lekérjük a játékos válaszait és pontjait
     const [solutionRes, pointsRes] = await Promise.all([
       window.apiClient.get('/api/game/solution'),
       window.apiClient.get('/api/game/points'),
     ]);
     const solution = solutionRes.solution;
     const points = pointsRes.points;
-    // Lekérjük a játékos állapotát is (game1_completed, game2_completed)
     const gameStateRes = await window.apiClient.get('/api/game/state');
     const gameState = gameStateRes.gameState || {};
 
-    // Helyes válaszok
     const correct = {
       weapon: 'Kalapács',
       killer: 'Névtelen alak',
@@ -53,7 +56,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     game2Div.innerHTML = `<span class="score-question">Sikerült feltörnöd a naplót</span> <span class="score-answer">${game2Success ? 'Igen' : 'Nem'}</span> <span class="score-points">${game2Success ? '+20' : '+0'}</span>`;
     container.appendChild(game2Div);
 
-    // Összesítés
     const totalDiv = document.createElement('div');
     totalDiv.className = 'score-total';
     totalDiv.innerHTML = `<b>Összesen: ${total} pont</b>`;

@@ -129,10 +129,38 @@
         // Ellenőrizzük, hogy mind a 2 szintet teljesítette-e
         console.log('Finish button clicked. completedLevels:', completedLevels);
         if (completedLevels === 2) {
-            // Sikeres játék - visszatérés a start.html-hez sikeres üzenettel
+            // Sikeres játék - visszalépés az otthon diary_lockpick_success jelenetére
             console.log('Setting game2 success via API');
             if (window.apiClient && window.apiClient.completeGame) {
-                window.apiClient.completeGame('game2').catch(e => console.warn('Nem sikerült menteni a game2_completed állapotot:', e));
+                window.apiClient.completeGame('game2')
+                    .then(() => {
+                        return fetch('/api/game/progress', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({ locationKey: 'otthon', sceneId: 'diary_lockpick_success' })
+                        });
+                    })
+                    .then(() => {
+                        window.location.href = 'start.html';
+                    })
+                    .catch(error => {
+                        console.error('Error saving game progress:', error);
+                        window.location.href = 'start.html';
+                    });
+            } else {
+                // Ha nincs apiClient, csak progress és átirányítás
+                fetch('/api/game/progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ locationKey: 'otthon', sceneId: 'diary_lockpick_success' })
+                }).then(() => {
+                    window.location.href = 'start.html';
+                }).catch(error => {
+                    console.error('Error saving game progress:', error);
+                    window.location.href = 'start.html';
+                });
             }
         } else {
             // Sikertelen játék - visszatérés vesztes üzenettel

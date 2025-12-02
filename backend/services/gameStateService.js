@@ -45,6 +45,8 @@ class GameStateService {
         investigationCompleted: updates.investigationCompleted !== undefined ? updates.investigationCompleted : gameSave.investigationCompleted,
         lucasDialogueCompleted: updates.lucasDialogueCompleted !== undefined ? updates.lucasDialogueCompleted : gameSave.lucasDialogueCompleted,
         lucasAvailable: updates.lucasAvailable !== undefined ? updates.lucasAvailable : gameSave.lucasAvailable,
+        game1_completed: updates.game1_completed !== undefined ? updates.game1_completed : gameSave.game1_completed,
+        game2_completed: updates.game2_completed !== undefined ? updates.game2_completed : gameSave.game2_completed,
       };
 
       await gameSave.update(updatedState);

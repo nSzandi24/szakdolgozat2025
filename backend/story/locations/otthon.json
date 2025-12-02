@@ -16,7 +16,8 @@
     
     {"sceneId": "diary_examine_start", "type":"narrative", "text":"Előveszed a naplót és leülsz az asztalhoz hogy megvizsgáld közelebbről."},
     {"sceneId": "diary_lock_notice", "type":"narrative", "text":"A napló lakatja zárva van, de szerencsére nálad vannak a szerszámaid amikkel megpróbálod feltörni a lakatot."},
-    {"sceneId": "diary_lockpick_start", "type":"narrative", "text":"Elkezded feltörni a lakatot...", "action": "redirect", "redirectUrl": "../game2.html"},
+    {"sceneId": "diary_lockpick_start", "type":"narrative", "text":"Elkezded feltörni a lakatot...", "nextScene": "diary_lockpick_game"},
+    {"sceneId": "diary_lockpick_game", "type": "narrative", "text": "Kattints a gombra a lakat feltöréséhez!", "action": "redirect", "redirectUrl": "../game2.html"},
     
     {"sceneId": "diary_lockpick_success", "type":"narrative", "text":"Sikerült feltörnöd a napló lakatját! A bonyolult mechanizmus végül engedett.", "condition": "game2Success"},
     {"sceneId": "diary_opens", "type":"narrative", "text":"A napló kinyílik előtted. Charlotte feljegyzései végre olvashatók..."},

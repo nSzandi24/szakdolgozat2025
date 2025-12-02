@@ -312,12 +312,16 @@
         const nextBtn = document.createElement('button');
         nextBtn.textContent = 'Következő';
         nextBtn.className = 'next-btn';
-        
-        // Check if this scene triggers an automatic location switch
-        if (scene.autoSwitch && scene.location) {
+
+        if (scene.action === 'redirect' && scene.redirectUrl) {
+            // On click, redirect to the given URL
+            nextBtn.addEventListener('click', () => {
+                window.location.href = scene.redirectUrl;
+            });
+        } else if (scene.autoSwitch && scene.location) {
             nextBtn.addEventListener('click', async () => {
                 const locationKey = getLocationKeyFromName(scene.location);
-                await switchLocation(locationKey);
+                await switchLocation(locationKey, true);
             });
         } else if (scene.nextScene !== undefined) {
             // Go to specific scene by sceneId
@@ -326,7 +330,7 @@
             // Go to next sequential scene
             nextBtn.addEventListener('click', progressToNextScene);
         }
-        
+
         nextButtonContainer.appendChild(nextBtn);
     }
 
@@ -475,7 +479,8 @@
             await window.startSolutionFlow();
         } else if (choice.autoSwitch && choice.location) {
             const locationKey = getLocationKeyFromName(choice.location);
-            await switchLocation(locationKey);
+            // Skip confirmation for autoSwitch
+            await switchLocation(locationKey, true);
             // Ha nextScene is van, lépj arra a jelenetre az új helyszínen
             if (choice.nextScene !== undefined) {
                 await progressToSceneById(choice.nextScene);
@@ -552,8 +557,83 @@
     /**
      * Switch to a different location
      */
-    async function switchLocation(locationKey) {
+    async function switchLocation(locationKey, skipConfirmation = false) {
         try {
+            if (!gameState.gameFlags) gameState.gameFlags = {};
+
+            // Location change confirmation
+            if (!skipConfirmation) {
+                // Show confirmation scene before switching
+                clearAreas();
+                // Use current location's background
+                updateBackground(locationsMetadata && locationsMetadata[currentLocation]?.backgroundImage || '');
+                const box = document.createElement('div');
+                box.style.background = '#ffffff';
+                box.style.border = '3px solid #8b7355';
+                box.style.borderRadius = '10px';
+                box.style.padding = '40px';
+                box.style.margin = '30px auto';
+                box.style.maxWidth = '95%';
+                box.style.boxShadow = '0 6px 30px rgba(0, 0, 0, 0.4)';
+                box.style.display = 'flex';
+                box.style.flexDirection = 'column';
+                box.style.alignItems = 'center';
+
+                const p = document.createElement('p');
+                p.textContent = 'Biztos el akarod hagyni a helyszínt?';
+                p.style.fontWeight = 'bold';
+                p.style.marginBottom = '24px';
+                box.appendChild(p);
+
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.gap = '24px';
+
+                const btnYes = document.createElement('button');
+                btnYes.textContent = 'Igen';
+                btnYes.className = 'choice-bubble';
+                btnYes.style.minWidth = '120px';
+                btnYes.addEventListener('click', async () => {
+                    await switchLocation(locationKey, true);
+                });
+                const btnNo = document.createElement('button');
+                btnNo.textContent = 'Nem';
+                btnNo.className = 'choice-bubble';
+                btnNo.style.minWidth = '120px';
+                btnNo.addEventListener('click', async () => {
+                    // Re-render current scene, stay here
+                    await renderCurrentScene();
+                });
+                btnContainer.appendChild(btnYes);
+                btnContainer.appendChild(btnNo);
+                box.appendChild(btnContainer);
+
+                dialogueEl.appendChild(box);
+                return;
+            }
+
+            if (locationKey === 'nyomornegyed') {
+                if (gameState.gameFlags.nyomornegyedVisited) {
+                    await loadLocation(locationKey);
+                    clearAreas();
+                    updateBackground('pictures/nyomornegyed.png');
+                    const p = document.createElement('p');
+                    p.textContent = 'A nyomornegyedbe túl veszélyes visszatérni. Jobb, ha inkább hazamész.';
+                    dialogueEl.appendChild(p);
+                    const nextBtn = document.createElement('button');
+                    nextBtn.textContent = 'Következő';
+                    nextBtn.className = 'next-btn';
+                    nextBtn.addEventListener('click', async () => {
+                        await switchLocation('otthon', true);
+                    });
+                    nextButtonContainer.appendChild(nextBtn);
+                    return;
+                } else {
+                    gameState.gameFlags.nyomornegyedVisited = true;
+                    await apiClient.setFlags({ nyomornegyedVisited: true });
+                }
+            }
+
             // Load new location
             await loadLocation(locationKey);
 

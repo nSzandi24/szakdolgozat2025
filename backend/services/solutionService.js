@@ -28,6 +28,13 @@ async function saveSolution(userId, answers) {
       points += 15;
     }
   }
+
+  // Add minigame points if completed
+  const { GameSave } = require('../database');
+  const gameSave = await GameSave.getOrCreateForUser(userId);
+  if (gameSave.game1_completed) points += 20;
+  if (gameSave.game2_completed) points += 20;
+
   // Save or update points for user
   await Point.upsert({ userId, points });
   return points;

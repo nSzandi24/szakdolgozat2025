@@ -59,24 +59,41 @@ $(document).ready(function () {
                         
                         // Call backend to save game1 success
                         alert('Sikerült a játék!');
-                        
-                        // Set Piac location to scene 22 (successful help)
-                        fetch('/api/game/progress', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'same-origin',
-                            body: JSON.stringify({ locationKey: 'piac', sceneIndex: 22 })
-                        }).then(() => {
-                            window.location.href = 'start.html';
-                        }).catch(error => {
-                            console.error('Error saving game progress:', error);
-                            window.location.href = 'start.html';
-                        });
-                        
+
+                        // Először mentsük a game1_completed állapotot, majd utána progress és átirányítás
                         if (window.apiClient && window.apiClient.completeGame) {
-                            window.apiClient.completeGame('game1').catch(e => console.warn('Nem sikerült menteni a game1_completed állapotot:', e));
+                            window.apiClient.completeGame('game1')
+                                .then(() => {
+                                    // Set Piac location to scene 'game_success' (successful help)
+                                    return fetch('/api/game/progress', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        credentials: 'same-origin',
+                                        body: JSON.stringify({ locationKey: 'piac', sceneId: 'game_success' })
+                                    });
+                                })
+                                .then(() => {
+                                    window.location.href = 'start.html';
+                                })
+                                .catch(error => {
+                                    console.error('Error saving game progress:', error);
+                                    window.location.href = 'start.html';
+                                });
+                        } else {
+                            // Ha nincs apiClient, csak progress és átirányítás
+                            fetch('/api/game/progress', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'same-origin',
+                                body: JSON.stringify({ locationKey: 'piac', sceneId: 'game_success' })
+                            }).then(() => {
+                                window.location.href = 'start.html';
+                            }).catch(error => {
+                                console.error('Error saving game progress:', error);
+                                window.location.href = 'start.html';
+                            });
                         }
-                        
+
                         return;
                     }
                 }
