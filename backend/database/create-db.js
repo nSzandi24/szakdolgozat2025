@@ -1,23 +1,31 @@
+
 /**
- * Database creation script
- * Creates the database if it doesn't exist using Sequelize
+ * Database creation script.
+ * Creates the database if it doesn't exist using Sequelize.
+ * @module create-db
  */
 
 const { Sequelize } = require('sequelize');
 const config = require('./config');
 
-// Get the database config for current environment
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
+/**
+ * Creates the database if it does not exist.
+ * Connects to the PostgreSQL server, checks for the database, and creates it if necessary.
+ * Handles connection and access errors with troubleshooting tips.
+ * @async
+ * @function createDatabase
+ * @returns {Promise<void>}
+ */
 async function createDatabase() {
-  // Connect to 'postgres' database to create our target database
   const sequelize = new Sequelize({
     username: dbConfig.username,
     password: dbConfig.password,
     host: dbConfig.host,
     port: dbConfig.port,
-    database: 'postgres', // Connect to default postgres database
+    database: 'postgres', 
     dialect: 'postgres',
     logging: false,
   });
@@ -26,7 +34,6 @@ async function createDatabase() {
     await sequelize.authenticate();
     console.log('✓ Connected to PostgreSQL server');
 
-    // Check if database exists
     const [results] = await sequelize.query(
       `SELECT 1 FROM pg_database WHERE datname = '${dbConfig.database}';`
     );
@@ -34,7 +41,6 @@ async function createDatabase() {
     if (results.length > 0) {
       console.log(`✓ Database '${dbConfig.database}' already exists`);
     } else {
-      // Create the database
       console.log(`→ Creating database '${dbConfig.database}'...`);
       await sequelize.query(`CREATE DATABASE "${dbConfig.database}";`);
       console.log(`✓ Database '${dbConfig.database}' created successfully`);
@@ -61,7 +67,10 @@ async function createDatabase() {
   }
 }
 
-// Run if called directly
+
+/**
+ * If this script is run directly, create the database.
+ */
 if (require.main === module) {
   createDatabase();
 }

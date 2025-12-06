@@ -3,24 +3,23 @@
   "displayName": "Városi őrség",
   "backgroundImage": "pictures/rendorseg.png",
   "scenes": [
-    {"sceneId": "arrival", "type":"narrative", "text":"Megérkeztél a rendőrőrsre. Az épület előtt városi őrök jönnek-mennek.", "startFromHereUnless": ""},
-    {"sceneId": "enter_building", "type":"narrative", "text":"Belépsz az épületbe, ahol egy fogadópultnál egy őr áll. Elmondod neki, hogy Lucas fő őrrel szeretnél beszélni a gyilkossági ügyről."},
-    {"sceneId": "guard_directs", "type":"narrative", "text":"Az őr bólint és int, hogy menj be a hátsó szobába ahol Lucas fő őr dolgozik."},
-    {"sceneId": "enter_lucas_room", "type":"narrative", "text":"Belépsz a szobába ahol Lucas fő őr éppen papírokat nézeget."},
-    {"sceneId": "lucas_greets", "type":"narrative", "text":"Lucas felnéz mikor belépsz és barátságosan üdvözöl."},
+    {"sceneId": "arrival", "type":"narrative", "text":"Megérkezel a városi őrséghez, hol páncélos őrök járnak-kelnek az épület előtt, s éber szemmel vigyázzák az utca rendjét.", "startFromHereUnless": ""},
+    {"sceneId": "enter_building", "type":"narrative", "text":"Belépsz az őrség épületébe, hol a fogadópultnál egy őr áll. Elmondod neki, hogy Lucas fő őrrel kívánsz beszélni a gyilkossági ügyben."},
+    {"sceneId": "guard_directs", "type":"narrative", "text":"Az őr bólint, s int, hogy a hátsó szobába menj, hol Lucas fő őr végzi munkáját."},
+    {"sceneId": "enter_lucas_room", "type":"narrative", "text":"Belépsz a szobába, hol Lucas fő őr pergameneket tanulmányoz, s feljegyzéseket készít serényen."},
+    {"sceneId": "lucas_greets", "type":"narrative", "text":"Lucas felnéz, midőn belépsz, s tiszteletteljesen üdvözöl téged."},
     {"sceneId": "main_menu", "type":"choices", "prompt":"Mit teszel?", "choices":[
       {"id":"solution", "label":"Ügy megoldása", "nextScene": "case_solved_question"},
-      {"id":"sapadt", "label":"Információ gyűjtés a Ghostskin-ról", "nextScene": "ask_ghostskin", "condition": "ghostskinInfoNeeded"}
+      {"id":"sapadt", "label":"Információ gyűjtése a Ghostskin-ról", "nextScene": "ask_ghostskin", "condition": "ghostskinInfoNeeded"}
     ]},
-    {"sceneId": "case_solved_question", "type":"choices", "prompt":"Kedves Játékos! Biztos vagy benne hogy elég bizonyítékot szereztél és megoldod az ügyet? Ezzel a döntéssel véget ér a játék és meglátod a befejezést.", "choices":[
+    {"sceneId": "case_solved_question", "type":"choices", "prompt":"Kedves Játékos! Bizton állítod, hogy elegendő bizonyítékot szereztél, s készen állsz az ügy lezárására? Ha így döntesz, a történet végére érsz, s feltárul előtted a befejezés.", "choices":[
       {"id":"yes", "label":"Igen, megoldom az ügyet."},
       {"id":"no", "label":"Még nem vagyok biztos benne.", "nextScene": "main_menu"}
     ]},
-    {"sceneId": "ask_ghostskin", "type":"narrative", "text":"Elmondod Lucas fő őrnek, hogy a nyomozás során rábukkantál egy Ghostskin nevű személyre, aki kapcsolatban állhat az üggyel."},
-    {"sceneId": "lucas_thinks", "type":"narrative", "text":"Lucas elgondolkodik és bólint."},
-    {"sceneId": "ghostskin_info_1", "type":"narrative", "text":"Igen, a Ghostskin... Azt a nevet már hallottam. Egy furcsa alak, aki a nyomornegyedben tartózkodik. Sokan félnek tőle, mert különös szereket árul.", "image":"pictures/characters/lucas.png"},
-    {"sceneId": "ghostskin_info_2", "type":"narrative", "text":"Azt beszélik, hogy van valami titkos találkozóhelye, ahol az ügyfeleit fogadja. Ha meg akarod találni, a nyomornegyedben kell körülnézned.", "image":"pictures/characters/lucas.png"},
-    {"sceneId": "ghostskin_warning", "type":"narrative", "text":"De vigyázz vele! Sok információt tud, de azt nem tudjuk hogy Önnek ez előnyére vagy hátrányára fog válni.", "image":"pictures/characters/lucas.png", "nextScene": "main_menu"}
+    {"sceneId": "ask_ghostskin", "type":"narrative", "text":"Elmondod Lucas fő őrnek, hogy nyomozásod során rábukkantál egy Ghostskin nevű alakra, ki kapcsolatban állhat az üggyel."},
+    {"sceneId": "lucas_thinks", "type":"narrative", "text":"Lucas elgondolkodik, majd lassan bólint, mintha régi emlékek elevenednének meg benne."},
+    {"sceneId": "ghostskin_info_1", "type":"narrative", "text":"Igen… Ghostskin. E nevet már hallottam. Különös szerzet, ki a nyomornegyed mélyén tanyázik. Sokan rettegik, mert baljós hatású szerekkel s titkos főzetekkel kereskedik.", "image":"pictures/characters/lucas.png"},
+    {"sceneId": "ghostskin_info_2", "type":"narrative", "text":"Úgy hírlik, van egy rejtekhelye, hol csak a megbízható ügyfeleit fogadja. Ha fel akarod kutatni, a nyomornegyed sikátoraiban kell keresgélned.", "image":"pictures/characters/lucas.png"},
+    {"sceneId": "ghostskin_warning", "type":"narrative", "text":"De légy óvatos! Ghostskin sok mindent tud, ám hogy ez számodra áldás vagy átok lesz-e, azt még az őrség sem tudja megmondani.", "image":"pictures/characters/lucas.png", "nextScene": "main_menu"}
   ]
 }
-

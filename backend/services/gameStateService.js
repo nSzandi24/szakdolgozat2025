@@ -1,8 +1,15 @@
 const { GameSave } = require('../database');
 
+/**
+ * Service for managing game state operations for users.
+ * Handles retrieval, updates, inventory, flags, scene progression, and resets.
+ * @class GameStateService
+ */
 class GameStateService {
   /**
-   * Get or create game state for a user
+   * Get or create game state for a user.
+   * @param {number|string} userId - The user ID.
+   * @returns {Promise<Object>} The user's game state.
    */
   async getGameState(userId) {
     try {
@@ -15,7 +22,9 @@ class GameStateService {
   }
 
   /**
-   * Initialize a new game for a user (reset to defaults)
+   * Initialize a new game for a user (reset to defaults).
+   * @param {number|string} userId - The user ID.
+   * @returns {Promise<Object>} The initialized game state.
    */
   async initializeGame(userId) {
     try {
@@ -28,13 +37,15 @@ class GameStateService {
   }
 
   /**
-   * Update game state with partial updates
+   * Update game state with partial updates.
+   * @param {number|string} userId - The user ID.
+   * @param {Object} updates - Partial updates to apply to the game state.
+   * @returns {Promise<Object>} The updated game state.
    */
   async updateGameState(userId, updates) {
     try {
       const gameSave = await GameSave.getOrCreateForUser(userId);
       
-      // Merge updates with existing state
       const updatedState = {
         currentLocation: updates.currentLocation || gameSave.currentLocation,
         currentSceneIds: { ...gameSave.currentSceneIds, ...(updates.currentSceneIds || {}) },
@@ -47,6 +58,8 @@ class GameStateService {
         lucasAvailable: updates.lucasAvailable !== undefined ? updates.lucasAvailable : gameSave.lucasAvailable,
         game1_completed: updates.game1_completed !== undefined ? updates.game1_completed : gameSave.game1_completed,
         game2_completed: updates.game2_completed !== undefined ? updates.game2_completed : gameSave.game2_completed,
+        investigationTime: updates.investigationTime !== undefined ? updates.investigationTime : gameSave.investigationTime,
+        notes: updates.notes !== undefined ? updates.notes : gameSave.notes,
       };
 
       await gameSave.update(updatedState);
@@ -58,7 +71,11 @@ class GameStateService {
   }
 
   /**
-   * Progress to next scene in current or different location
+   * Progress to next scene in current or different location.
+   * @param {number|string} userId - The user ID.
+   * @param {string} locationKey - The location key.
+   * @param {string} sceneId - The scene ID to progress to.
+   * @returns {Promise<Object>} The updated game state.
    */
   async progressScene(userId, locationKey, sceneId) {
     try {
@@ -78,20 +95,21 @@ class GameStateService {
   }
 
   /**
-   * Add an item to inventory
+   * Add an item to inventory.
+   * @param {number|string} userId - The user ID.
+   * @param {string} itemName - The name of the item to add.
+   * @returns {Promise<Object>} The updated game state.
    */
   async collectItem(userId, itemName) {
     try {
       const gameSave = await GameSave.getOrCreateForUser(userId);
       const items = [...(gameSave.collectedItems || [])];
       
-      // Don't add duplicates
       if (!items.includes(itemName)) {
         items.push(itemName);
         await gameSave.update({ collectedItems: items });
       }
 
-      // Reload to get the latest state from database
       await gameSave.reload();
       return gameSave.toGameState();
     } catch (error) {
@@ -101,7 +119,10 @@ class GameStateService {
   }
 
   /**
-   * Remove an item from inventory
+   * Remove an item from inventory.
+   * @param {number|string} userId - The user ID.
+   * @param {string} itemName - The name of the item to remove.
+   * @returns {Promise<Object>} The updated game state.
    */
   async removeItem(userId, itemName) {
     try {
@@ -122,14 +143,22 @@ class GameStateService {
   }
 
   /**
-   * Set one or more game flags
+   * Set one or more game flags.
+   * @param {number|string} userId - The user ID.
+   * @param {Object} flags - Flags to set.
+   * @returns {Promise<Object>} The updated game state.
    */
   async setFlags(userId, flags) {
     try {
       const gameSave = await GameSave.getOrCreateForUser(userId);
       const updatedFlags = { ...gameSave.gameFlags, ...flags };
-      
-      await gameSave.update({ gameFlags: updatedFlags });
+
+      const updateObj = { gameFlags: updatedFlags };
+      if (typeof flags.nyomornegyed_decision !== 'undefined') {
+        updateObj.nyomornegyed_decision = flags.nyomornegyed_decision;
+      }
+
+      await gameSave.update(updateObj);
       return gameSave.toGameState();
     } catch (error) {
       console.error('Error setting flags:', error);
@@ -138,7 +167,10 @@ class GameStateService {
   }
 
   /**
-   * Discover/unlock a new location
+   * Discover/unlock a new location.
+   * @param {number|string} userId - The user ID.
+   * @param {string} locationKey - The location key to unlock.
+   * @returns {Promise<Object>} The updated game state.
    */
   async discoverLocation(userId, locationKey) {
     try {
@@ -150,7 +182,6 @@ class GameStateService {
         await gameSave.update({ discoveredLocations: locations });
       }
 
-      // Reload to get the latest state from database
       await gameSave.reload();
       return gameSave.toGameState();
     } catch (error) {
@@ -160,7 +191,10 @@ class GameStateService {
   }
 
   /**
-   * Mark a scene as seen (for 'once' scenes)
+   * Mark a scene as seen (for 'once' scenes).
+   * @param {number|string} userId - The user ID.
+   * @param {string} sceneId - The scene ID to mark as seen.
+   * @returns {Promise<Object>} The updated game state.
    */
   async markSceneSeen(userId, sceneId) {
     try {
@@ -180,7 +214,11 @@ class GameStateService {
   }
 
   /**
-   * Mark a restart point as reached (for 'startFromHereUnless' scenes)
+   * Mark a restart point as reached (for 'startFromHereUnless' scenes).
+   * @param {number|string} userId - The user ID.
+   * @param {string} locationKey - The location key.
+   * @param {string} sceneId - The scene ID.
+   * @returns {Promise<Object>} The updated game state.
    */
   async markRestartPointReached(userId, locationKey, sceneId) {
     try {
@@ -193,7 +231,6 @@ class GameStateService {
         await gameSave.update({ reachedRestartPoints: restartPoints });
       }
 
-      // Reload to get the latest state from database
       await gameSave.reload();
       return gameSave.toGameState();
     } catch (error) {
@@ -203,13 +240,17 @@ class GameStateService {
   }
 
   /**
-   * Record mini-game completion
+   * Record mini-game completion.
+   * @param {number|string} userId - The user ID.
+   * @param {string} gameId - The mini-game ID.
+   * @param {boolean} success - Whether the mini-game was completed successfully.
+   * @param {Object} [updates] - Additional updates to apply.
+   * @returns {Promise<Object>} The updated game state.
    */
   async completeMiniGame(userId, gameId, success, updates = {}) {
     try {
       const gameSave = await GameSave.getOrCreateForUser(userId);
       
-      // Set game-specific flags
       const gameFlags = { ...gameSave.gameFlags };
       gameFlags[`${gameId}Played`] = true;
       
@@ -219,7 +260,6 @@ class GameStateService {
         gameFlags[`${gameId}Failure`] = true;
       }
 
-      // Apply any additional updates
       const finalUpdates = {
         gameFlags,
         ...updates,
@@ -234,7 +274,9 @@ class GameStateService {
   }
 
   /**
-   * Reset game progress for a user
+   * Reset game progress for a user.
+   * @param {number|string} userId - The user ID.
+   * @returns {Promise<Object>} The reset game state.
    */
   async resetProgress(userId) {
     try {

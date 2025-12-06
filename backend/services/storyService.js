@@ -1,7 +1,16 @@
 const fs = require('fs').promises;
 const path = require('path');
 
+/**
+ * Service for managing story data, locations, scenes, and validation.
+ * Handles loading, retrieval, and validation of story content.
+ * @class StoryService
+ */
 class StoryService {
+  /**
+   * Create a new StoryService instance.
+   * @constructor
+   */
   constructor() {
     this.storyPath = path.join(__dirname, '../story');
     this.metadata = null;
@@ -10,18 +19,17 @@ class StoryService {
   }
 
   /**
-   * Initialize the story service by loading metadata and all locations
+   * Initialize the story service by loading metadata and all locations.
+   * @returns {Promise<void>}
    */
   async initialize() {
     if (this.initialized) return;
 
     try {
-      // Load metadata
       const metadataPath = path.join(this.storyPath, 'metadata.json');
       const metadataContent = await fs.readFile(metadataPath, 'utf8');
       this.metadata = JSON.parse(metadataContent);
 
-      // Preload all location files
       for (const locationKey of this.metadata.locationOrder) {
         await this.loadLocation(locationKey);
       }
@@ -35,7 +43,9 @@ class StoryService {
   }
 
   /**
-   * Load a specific location's story data
+   * Load a specific location's story data.
+   * @param {string} locationKey - The key of the location to load.
+   * @returns {Promise<Object>} The loaded location data.
    */
   async loadLocation(locationKey) {
     try {
@@ -50,7 +60,8 @@ class StoryService {
   }
 
   /**
-   * Get all locations metadata
+   * Get all locations metadata.
+   * @returns {Object} Locations metadata.
    */
   getLocationsMetadata() {
     if (!this.initialized) {
@@ -60,7 +71,9 @@ class StoryService {
   }
 
   /**
-   * Get all scenes for a specific location
+   * Get all scenes for a specific location.
+   * @param {string} locationKey - The key of the location.
+   * @returns {Object} Location data with scenes.
    */
   getLocationScenes(locationKey) {
     if (!this.initialized) {
@@ -81,7 +94,10 @@ class StoryService {
   }
 
   /**
-   * Get a specific scene from a location by sceneId
+   * Get a specific scene from a location by sceneId.
+   * @param {string} locationKey - The key of the location.
+   * @param {string|number} sceneId - The scene ID.
+   * @returns {Object} Scene data.
    */
   getScene(locationKey, sceneId) {
     locationKey = locationKey.toLowerCase();
@@ -109,7 +125,10 @@ class StoryService {
   }
 
   /**
-   * Find a scene by its sceneId within a location
+   * Find a scene by its sceneId within a location.
+   * @param {string} locationKey - The key of the location.
+   * @param {string|number} sceneId - The scene ID.
+   * @returns {Object|null} The scene object or null if not found.
    */
   findSceneById(locationKey, sceneId) {
     const location = this.locations[locationKey];
@@ -121,14 +140,15 @@ class StoryService {
   }
 
   /**
-   * Get the current scene for a user based on their game state
+   * Get the current scene for a user based on their game state.
+   * @param {Object} gameState - The user's game state.
+   * @returns {Object} The current scene data.
    */
   getCurrentScene(gameState) {
     const { currentLocation, currentSceneIds } = gameState;
     const sceneId = currentSceneIds[currentLocation];
     
     if (!sceneId) {
-      // No scene ID set, return first scene
       const location = this.locations[currentLocation];
       if (!location || !location.scenes || location.scenes.length === 0) {
         throw new Error(`No scenes available for location ${currentLocation}`);
@@ -140,7 +160,9 @@ class StoryService {
   }
 
   /**
-   * Get location metadata by key
+   * Get location metadata by key.
+   * @param {string} locationKey - The key of the location.
+   * @returns {Object} Location metadata.
    */
   getLocationMetadata(locationKey) {
     if (!this.initialized) {
@@ -156,14 +178,18 @@ class StoryService {
   }
 
   /**
-   * Check if a location exists
+   * Check if a location exists.
+   * @param {string} locationKey - The key of the location.
+   * @returns {boolean} True if the location exists, false otherwise.
    */
   locationExists(locationKey) {
     return this.metadata && this.metadata.locations[locationKey] !== undefined;
   }
 
   /**
-   * Get total number of scenes in a location
+   * Get total number of scenes in a location.
+   * @param {string} locationKey - The key of the location.
+   * @returns {number} The number of scenes in the location.
    */
   getSceneCount(locationKey) {
     const location = this.locations[locationKey];
@@ -171,11 +197,11 @@ class StoryService {
   }
 
   /**
-   * Determine the starting scene ID for a location based on restart points and game state
-   * @param {string} locationKey - The location key
-   * @param {object} gameState - The current game state containing reachedRestartPoints and gameFlags
-   * @param {string} savedSceneId - The saved scene ID from currentSceneIds
-   * @returns {string} - The scene ID to start from
+   * Determine the starting scene ID for a location based on restart points and game state.
+   * @param {string} locationKey - The location key.
+   * @param {object} gameState - The current game state containing reachedRestartPoints and gameFlags.
+   * @param {string} savedSceneId - The saved scene ID from currentSceneIds.
+   * @returns {string} The scene ID to start from.
    */
   getStartingSceneId(locationKey, gameState, savedSceneId) {
     const location = this.locations[locationKey];
@@ -185,20 +211,17 @@ class StoryService {
 
     const reachedRestartPoints = gameState.reachedRestartPoints || [];
     
-    // Find all restart points for this location that have been reached
     const locationRestartPoints = reachedRestartPoints
       .filter(point => point.startsWith(`${locationKey}_`))
       .map(point => {
         const parts = point.split('_');
-        return parts.slice(1).join('_'); // Get sceneId part (handles sceneIds with underscores)
+        return parts.slice(1).join('_'); 
       });
 
-    // If no restart points reached, use default behavior
     if (locationRestartPoints.length === 0) {
       return savedSceneId || location.scenes[0].sceneId;
     }
 
-    // Check each restart point (in reverse order to get the latest)
     for (let i = locationRestartPoints.length - 1; i >= 0; i--) {
       const restartSceneId = locationRestartPoints[i];
       const restartScene = this.findSceneById(locationKey, restartSceneId);
@@ -207,41 +230,34 @@ class StoryService {
         continue;
       }
 
-      // If startFromHereUnless is empty string, always restart from here
       if (restartScene.startFromHereUnless === '') {
         return restartSceneId;
       }
 
-      // If startFromHereUnless has a condition, check if it's met
       const condition = restartScene.startFromHereUnless;
       const conditionMet = this.checkCondition(condition, gameState);
 
-      // If condition is met, DON'T use this restart point (fall back to default)
       if (conditionMet) {
         continue;
       }
 
-      // Condition is NOT met, so use this restart point
       return restartSceneId;
     }
 
-    // No valid restart point found, use saved or first scene
     return savedSceneId || location.scenes[0].sceneId;
   }
 
   /**
-   * Check if a condition is met based on game state
-   * @param {string} condition - The condition to check
-   * @param {object} gameState - The current game state
-   * @returns {boolean} - Whether the condition is met
+   * Check if a condition is met based on game state.
+   * @param {string} condition - The condition to check.
+   * @param {object} gameState - The current game state.
+   * @returns {boolean} Whether the condition is met.
    */
   checkCondition(condition, gameState) {
-    // Check game flags
     if (gameState.gameFlags && gameState.gameFlags[condition] !== undefined) {
       return gameState.gameFlags[condition] === true;
     }
 
-    // Check special conditions
     if (condition === 'investigationCompleted') {
       return gameState.investigationCompleted === true;
     }
@@ -249,14 +265,13 @@ class StoryService {
       return gameState.lucasAvailable === true;
     }
 
-    // Default to false if condition not found
     return false;
   }
 
   /**
-   * Validate all scene references in all locations
-   * Checks that all nextScene references point to valid sceneIds
-   * @returns {object} - Validation result with errors array
+   * Validate all scene references in all locations.
+   * Checks that all nextScene references point to valid sceneIds.
+   * @returns {object} Validation result with errors array.
    */
   validateSceneReferences() {
     const errors = [];
@@ -266,7 +281,6 @@ class StoryService {
       const sceneIds = new Set(location.scenes.map(s => s.sceneId));
 
       location.scenes.forEach((scene, index) => {
-        // Validate sceneId exists
         if (!scene.sceneId) {
           errors.push({
             location: locationKey,
@@ -275,7 +289,6 @@ class StoryService {
           });
         }
 
-        // Check for duplicate sceneIds
         const duplicates = location.scenes.filter(s => s.sceneId === scene.sceneId);
         if (duplicates.length > 1) {
           errors.push({
@@ -285,7 +298,6 @@ class StoryService {
           });
         }
 
-        // Validate nextScene if it exists
         if (scene.nextScene !== undefined && scene.nextScene !== null) {
           if (!sceneIds.has(scene.nextScene)) {
             errors.push({
@@ -297,7 +309,6 @@ class StoryService {
           }
         }
 
-        // Validate choices' nextScene
         if (scene.choices && Array.isArray(scene.choices)) {
           scene.choices.forEach((choice, choiceIndex) => {
             if (choice.nextScene !== undefined && choice.nextScene !== null) {
@@ -324,7 +335,6 @@ class StoryService {
   }
 }
 
-// Export singleton instance
 const storyService = new StoryService();
 module.exports = storyService;
 

@@ -1,3 +1,9 @@
+/**
+ * Lock-picking mini-game logic.
+ * Handles grid puzzle, win/loss, and user interactions.
+ * @file game2.js
+ */
+
 (function() {
     const gridEl = document.getElementById('grid');
     const messageEl = document.getElementById('message');
@@ -13,12 +19,14 @@
     let moves = 0;
     let grid = [];
     
-    // 2 szint különböző nehézséggel
     const levels = [
-        { size: 3, pattern: [[1,0,1],[0,1,0],[1,0,1]] }, // Könnyű 3x3
-        { size: 4, pattern: [[1,0,0,1],[0,1,1,0],[0,1,1,0],[1,0,0,1]] } // Közepes 4x4
+        { size: 3, pattern: [[1,0,1],[0,1,0],[1,0,1]] }, 
+        { size: 4, pattern: [[1,0,0,1],[0,1,1,0],[0,1,1,0],[1,0,0,1]] } 
     ];
 
+    /**
+     * Initialize the current level, set up grid and UI.
+     */
     function initLevel() {
         const level = levels[currentLevel - 1];
         const size = level.size;
@@ -30,7 +38,6 @@
         movesEl.textContent = moves;
         currentLevelEl.textContent = currentLevel;
         
-        // Inicializáljuk a grid-et a pattern alapján
         for (let i = 0; i < size; i++) {
             grid[i] = [];
             for (let j = 0; j < size; j++) {
@@ -53,21 +60,23 @@
         finishButton.classList.add('hidden');
         restartButton.classList.remove('hidden');
         
-        // Újra engedélyezzük a cellákat
         document.querySelectorAll('.cell').forEach(cell => {
             cell.style.pointerEvents = 'auto';
         });
     }
 
+    /**
+     * Handle a cell click, toggling the cell and its neighbors, and check for win.
+     * @param {number} row - Row index of the clicked cell.
+     * @param {number} col - Column index of the clicked cell.
+     */
     function handleCellClick(row, col) {
         const size = levels[currentLevel - 1].size;
         moves++;
         movesEl.textContent = moves;
         
-        // Toggle a rákattintott cella
         toggleCell(row, col);
         
-        // Toggle a szomszédok (fel, le, bal, jobb)
         if (row > 0) toggleCell(row - 1, col);
         if (row < size - 1) toggleCell(row + 1, col);
         if (col > 0) toggleCell(row, col - 1);
@@ -76,12 +85,20 @@
         checkWin();
     }
 
+    /**
+     * Toggle the state of a cell and update its visual state.
+     * @param {number} row - Row index.
+     * @param {number} col - Column index.
+     */
     function toggleCell(row, col) {
         grid[row][col] = grid[row][col] === 1 ? 0 : 1;
         const cellEl = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         cellEl.classList.toggle('active');
     }
 
+    /**
+     * Check if all cells are off (win condition), update UI and handle next/finish.
+     */
     function checkWin() {
         const allOff = grid.every(row => row.every(cell => cell === 0));
         
@@ -89,7 +106,6 @@
             completedLevels++;
             completedLevelsEl.textContent = completedLevels;
             
-            // Letiltjuk a cellákat
             document.querySelectorAll('.cell').forEach(cell => {
                 cell.style.pointerEvents = 'none';
             });
@@ -98,7 +114,6 @@
                 showMessage('Siker! A réteg feltörve!', 'success');
                 nextButton.classList.remove('hidden');
             } else {
-                // Utolsó szint teljesítve
                 showMessage('Minden réteg feltörve! A lakat kinyílt!', 'success');
                 finishButton.classList.remove('hidden');
                 finishButton.textContent = 'Napló megnyitása';
@@ -106,12 +121,20 @@
         }
     }
 
+    /**
+     * Show a message to the user.
+     * @param {string} text - Message text.
+     * @param {string} type - Message type (e.g., 'success').
+     */
     function showMessage(text, type) {
         messageEl.textContent = text;
         messageEl.className = 'message ' + type;
         messageEl.style.display = 'block';
     }
 
+    /**
+     * Hide the message element.
+     */
     function hideMessage() {
         messageEl.style.display = 'none';
     }
@@ -126,11 +149,8 @@
     });
 
     finishButton.addEventListener('click', () => {
-        // Ellenőrizzük, hogy mind a 2 szintet teljesítette-e
         console.log('Finish button clicked. completedLevels:', completedLevels);
         if (completedLevels === 2) {
-            // Sikeres játék - visszalépés az otthon diary_lockpick_success jelenetére
-            console.log('Setting game2 success via API');
             if (window.apiClient && window.apiClient.completeGame) {
                 window.apiClient.completeGame('game2')
                     .then(() => {
@@ -149,7 +169,6 @@
                         window.location.href = 'start.html';
                     });
             } else {
-                // Ha nincs apiClient, csak progress és átirányítás
                 fetch('/api/game/progress', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -163,24 +182,22 @@
                 });
             }
         } else {
-            // Sikertelen játék - visszatérés vesztes üzenettel
-            console.log('Setting game2 failure via API');
-            fetch('/api/game/progress', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'same-origin',
-                body: JSON.stringify({ locationKey: 'otthon', sceneIndex: 23 })
-            }).then(() => {
+            alert('A játék megszakítva! Nem sikerült feltörni a naplót.');
+            if (window.apiClient && window.apiClient.completeGame) {
+                window.apiClient.completeGame('game2')
+                    .then(() => {
+                        window.location.href = 'start.html';
+                    })
+                    .catch(error => {
+                        console.error('Error saving game progress:', error);
+                        window.location.href = 'start.html';
+                    });
+            } else {
                 window.location.href = 'start.html';
-            }).catch(error => {
-                console.error('Error saving game progress:', error);
-                window.location.href = 'start.html';
-            });
+            }
         }
     });
 
-    // Alternatív befejezés gomb (ha nem sikerült mindhárom szint)
-    // Adjunk lehetőséget a játékosnak, hogy feladja
     const giveUpButton = document.createElement('button');
     giveUpButton.className = 'button';
     giveUpButton.textContent = 'Feladom';
@@ -194,7 +211,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'same-origin',
-                body: JSON.stringify({ locationKey: 'otthon', sceneIndex: 23 })
+                body: JSON.stringify({ locationKey: 'otthon', sceneId : "diary_lockpick_failure" })
             }).then(() => {
                 window.location.href = 'start.html';
             }).catch(error => {
@@ -205,6 +222,5 @@
     });
     document.querySelector('.game-container').appendChild(giveUpButton);
 
-    // Kezdjük az első szintet
     initLevel();
 })();

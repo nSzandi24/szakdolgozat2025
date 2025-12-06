@@ -7,8 +7,15 @@ const storyService = require('../services/storyService');
 const solutionService = require('../services/solutionService');
 /**
  * POST /api/game/solution
- * Save player's answers to the case-solving questions
- * Body: { weapon, killer, motive, kidnapper, kidnapMotive, ghostskin }
+ * Save player's answers to the case-solving questions.
+ * @route POST /api/game/solution
+ * @body {string} weapon
+ * @body {string} killer
+ * @body {string} motive
+ * @body {string} kidnapper
+ * @body {string} kidnapMotive
+ * @body {string} ghostskin
+ * @returns {Object} JSON response with success and message
  */
 router.post('/solution', async (req, res) => {
   try {
@@ -25,20 +32,18 @@ router.post('/solution', async (req, res) => {
   }
 });
 
-// All game routes require authentication
 router.use(authMiddleware);
 
 /**
  * GET /api/game/state
- * Get user's complete game state
+ * Get user's complete game state.
+ * @route GET /api/game/state
+ * @returns {Object} JSON response with gameState and currentScene
  */
 router.get('/state', async (req, res) => {
   try {
     const gameState = await gameStateService.getGameState(req.userId);
-    
-    // Also include current scene
     const currentScene = storyService.getCurrentScene(gameState);
-    
     res.json({
       success: true,
       gameState,
@@ -46,6 +51,7 @@ router.get('/state', async (req, res) => {
     });
   } catch (error) {
     console.error('Error getting game state:', error);
+    console.error('Request userId:', req.userId, 'user:', req.user);
     res.status(500).json({
       success: false,
       message: 'Hiba történt a játékállapot lekérése során.',
@@ -55,13 +61,15 @@ router.get('/state', async (req, res) => {
 
 /**
  * POST /api/game/initialize
- * Initialize/reset game for user
+ * Initialize/reset game for user.
+ * @route POST /api/game/initialize
+ * @returns {Object} JSON response with initialized gameState and currentScene
  */
 router.post('/initialize', async (req, res) => {
   try {
+    console.log('POST /api/game/initialize called. req.userId:', req.userId, 'req.user:', req.user);
     const gameState = await gameStateService.initializeGame(req.userId);
     const currentScene = storyService.getCurrentScene(gameState);
-    
     res.json({
       success: true,
       message: 'Játék sikeresen inicializálva.',
@@ -70,6 +78,7 @@ router.post('/initialize', async (req, res) => {
     });
   } catch (error) {
     console.error('Error initializing game:', error);
+    console.error('Request userId:', req.userId, 'user:', req.user);
     res.status(500).json({
       success: false,
       message: 'Hiba történt a játék inicializálása során.',
@@ -79,7 +88,10 @@ router.post('/initialize', async (req, res) => {
 
 /**
  * POST /api/game/update
- * Update game state with partial updates
+ * Update game state with partial updates.
+ * @route POST /api/game/update
+ * @body {Object} updates - Partial game state updates
+ * @returns {Object} JSON response with updated gameState and currentScene
  */
 router.post('/update', async (req, res) => {
   try {
@@ -104,7 +116,11 @@ router.post('/update', async (req, res) => {
 
 /**
  * POST /api/game/progress
- * Progress to a specific scene
+ * Progress to a specific scene.
+ * @route POST /api/game/progress
+ * @body {string} locationKey
+ * @body {string} sceneId
+ * @returns {Object} JSON response with updated gameState and currentScene
  */
 router.post('/progress', async (req, res) => {
   try {
@@ -141,7 +157,10 @@ router.post('/progress', async (req, res) => {
 
 /**
  * POST /api/game/collect-item
- * Add item to inventory
+ * Add item to inventory.
+ * @route POST /api/game/collect-item
+ * @body {string} itemName
+ * @returns {Object} JSON response with updated gameState
  */
 router.post('/collect-item', async (req, res) => {
   try {
@@ -172,7 +191,10 @@ router.post('/collect-item', async (req, res) => {
 
 /**
  * POST /api/game/remove-item
- * Remove item from inventory
+ * Remove item from inventory.
+ * @route POST /api/game/remove-item
+ * @body {string} itemName
+ * @returns {Object} JSON response with updated gameState
  */
 router.post('/remove-item', async (req, res) => {
   try {
@@ -203,7 +225,10 @@ router.post('/remove-item', async (req, res) => {
 
 /**
  * POST /api/game/set-flag
- * Set game flag(s)
+ * Set game flag(s).
+ * @route POST /api/game/set-flag
+ * @body {Object} flags - Flags to set
+ * @returns {Object} JSON response with updated gameState
  */
 router.post('/set-flag', async (req, res) => {
   try {
@@ -234,7 +259,10 @@ router.post('/set-flag', async (req, res) => {
 
 /**
  * POST /api/game/discover-location
- * Unlock a new location
+ * Unlock a new location.
+ * @route POST /api/game/discover-location
+ * @body {string} locationKey
+ * @returns {Object} JSON response with updated gameState
  */
 router.post('/discover-location', async (req, res) => {
   try {
@@ -265,7 +293,11 @@ router.post('/discover-location', async (req, res) => {
 
 /**
  * POST /api/game/mark-restart-point
- * Mark a restart point as reached
+ * Mark a restart point as reached.
+ * @route POST /api/game/mark-restart-point
+ * @body {string} locationKey
+ * @body {string} sceneId
+ * @returns {Object} JSON response with updated gameState
  */
 router.post('/mark-restart-point', async (req, res) => {
   try {
@@ -300,7 +332,12 @@ router.post('/mark-restart-point', async (req, res) => {
 
 /**
  * POST /api/game/mini-game/complete
- * Record mini-game completion
+ * Record mini-game completion.
+ * @route POST /api/game/mini-game/complete
+ * @body {string} gameId
+ * @body {boolean} success
+ * @body {Object} [updates]
+ * @returns {Object} JSON response with updated gameState
  */
 router.post('/mini-game/complete', async (req, res) => {
   try {
@@ -336,7 +373,9 @@ router.post('/mini-game/complete', async (req, res) => {
 
 /**
  * DELETE /api/game/reset
- * Reset game progress
+ * Reset game progress.
+ * @route DELETE /api/game/reset
+ * @returns {Object} JSON response with reset gameState and currentScene
  */
 router.delete('/reset', async (req, res) => {
   try {
@@ -360,7 +399,9 @@ router.delete('/reset', async (req, res) => {
 
 /**
  * GET /api/game/points
- * Get user's total points
+ * Get user's total points.
+ * @route GET /api/game/points
+ * @returns {Object} JSON response with points
  */
 router.get('/points', async (req, res) => {
   try {
@@ -375,7 +416,9 @@ router.get('/points', async (req, res) => {
 
 /**
  * GET /api/game/solution
- * Get user's last submitted solution
+ * Get user's last submitted solution.
+ * @route GET /api/game/solution
+ * @returns {Object} JSON response with solution
  */
 router.get('/solution', async (req, res) => {
   try {
@@ -390,8 +433,10 @@ router.get('/solution', async (req, res) => {
 
 /**
  * POST /api/game/complete
- * Set game1_completed or game2_completed to true
- * Body: { game: 'game1' | 'game2' }
+ * Set game1_completed or game2_completed to true.
+ * @route POST /api/game/complete
+ * @body {string} game - 'game1' or 'game2'
+ * @returns {Object} JSON response with success and message
  */
 router.post('/complete', async (req, res) => {
   try {
@@ -413,16 +458,15 @@ router.post('/complete', async (req, res) => {
 
 /**
  * GET /api/game/all-points
- * List all users and their points
+ * List all users and their points.
+ * @route GET /api/game/all-points
+ * @returns {Object} JSON response with users and their points
  */
 router.get('/all-points', async (req, res) => {
   try {
-    // Csak admin vagy tanári jogosultsággal lenne érdemes, de most minden bejelentkezett user láthatja
     const { User, Point } = require('../database');
     const users = await User.findAll({ attributes: ['id', 'username'] });
     const points = await Point.findAll();
-    // Mapeljük userId -> legnagyobb pontszám (ha több Point rekord lenne)
-    // (Jelenleg 1 rekord/user, de a jövőben lehet több is)
     const userMaxPoints = {};
     points.forEach(p => {
       if (!userMaxPoints[p.userId] || p.points > userMaxPoints[p.userId]) {

@@ -1,4 +1,3 @@
-// Migration: Set nyomornegyed_decision to STRING, not null, default 'accepted_help'
 'use strict';
 
 module.exports = {

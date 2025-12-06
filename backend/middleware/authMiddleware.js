@@ -4,7 +4,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 const JWT_EXPIRES_IN = '7d';
 
 /**
- * Generate JWT token for a user
+ * Generates a JWT token for a user.
+ * @param {Object} user - The user object containing id, username, email, and permission.
+ * @returns {string} The signed JWT token.
+ * @function generateToken
  */
 function generateToken(user) {
   const payload = {
@@ -18,7 +21,13 @@ function generateToken(user) {
 }
 
 /**
- * Middleware to verify JWT token from cookie
+ * Express middleware to verify JWT token from cookie.
+ * If valid, attaches user info to req.user and req.userId.
+ * Responds with 401 if token is missing, expired, or invalid.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {Function} next
+ * @function authMiddleware
  */
 function authMiddleware(req, res, next) {
   try {
@@ -31,10 +40,8 @@ function authMiddleware(req, res, next) {
       });
     }
 
-    // Verify token
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Attach user info to request
     req.user = decoded;
     req.userId = decoded.id;
 
@@ -63,7 +70,13 @@ function authMiddleware(req, res, next) {
 }
 
 /**
- * Optional auth middleware - doesn't fail if no token provided
+ * Optional authentication middleware.
+ * If a token is present and valid, attaches user info to req.user and req.userId.
+ * If no token or invalid, continues without error.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {Function} next
+ * @function optionalAuthMiddleware
  */
 function optionalAuthMiddleware(req, res, next) {
   try {
@@ -77,7 +90,6 @@ function optionalAuthMiddleware(req, res, next) {
 
     next();
   } catch (error) {
-    // Silently ignore invalid tokens for optional auth
     next();
   }
 }

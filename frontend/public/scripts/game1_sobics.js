@@ -1,3 +1,9 @@
+/**
+ * Fruit stacking mini-game logic.
+ * Handles game board generation, scoring, win/loss, and user interactions.
+ * @file game1_sobics.js
+ */
+
 $(document).ready(function () {
     let fruits = [
         {name: 'alma', image: 'pictures/sobics/alma.png'},
@@ -8,10 +14,18 @@ $(document).ready(function () {
     let score = 0;
     let gameRunning = false;
 
+    /**
+     * Generate a random fruit object from the fruits array.
+     * @returns {Object} Random fruit object.
+     */
     function generateRandomFruit() {
         return fruits[Math.floor(Math.random() * fruits.length)];
     }
 
+    /**
+     * Generate a random fruit brick DOM element.
+     * @returns {jQuery} Brick element with random fruit.
+     */
     function generateRandomBrick() {
         const fruit = generateRandomFruit();
         return $('<div class="brick"></div>')
@@ -23,6 +37,10 @@ $(document).ready(function () {
             .attr('data-fruit', fruit.name);
     }
 
+    /**
+     * Generate a column of 3 random bricks.
+     * @returns {jQuery} Column element.
+     */
     function generateColumn() {
         const column = $('<div class="column"></div>');
         for (let i = 0; i < 3; i++) {
@@ -31,12 +49,18 @@ $(document).ready(function () {
         return column;
     }
 
+    /**
+     * Generate the full game board with 10 columns.
+     */
     function generateGameBoard() {
         for (let i = 0; i < 10; i++) {
             $('#game').append(generateColumn());
         }
     }
 
+    /**
+     * Check for 4 matching bricks in a column and remove them, update score, and handle win condition.
+     */
     function checkAndRemoveMatches() {
         $('.column').each(function () {
             let bricks = $(this).children('.brick');
@@ -52,19 +76,15 @@ $(document).ready(function () {
                     score += 400;
                     $('#score').text('Pontszám: ' + score);
                     
-                    // Check if player won
                     if (score >= 5000) {
                         gameRunning = false;
                         $('#startBtn').prop('disabled', false);
                         
-                        // Call backend to save game1 success
                         alert('Sikerült a játék!');
 
-                        // Először mentsük a game1_completed állapotot, majd utána progress és átirányítás
                         if (window.apiClient && window.apiClient.completeGame) {
                             window.apiClient.completeGame('game1')
                                 .then(() => {
-                                    // Set Piac location to scene 'game_success' (successful help)
                                     return fetch('/api/game/progress', {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
@@ -80,7 +100,6 @@ $(document).ready(function () {
                                     window.location.href = 'start.html';
                                 });
                         } else {
-                            // Ha nincs apiClient, csak progress és átirányítás
                             fetch('/api/game/progress', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -114,19 +133,36 @@ $(document).ready(function () {
     $('#endBtn').on('click', function () {
         gameRunning = false;
         $('#startBtn').prop('disabled', false);
-        
-        // Set Piac location to scene 20 (angry merchant)
-        fetch('/api/game/progress', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'same-origin',
-            body: JSON.stringify({ locationKey: 'piac', sceneIndex: 20 })
-        }).then(() => {
-            window.location.href = 'start.html';
-        }).catch(error => {
-            console.error('Error saving game progress:', error);
-            window.location.href = 'start.html';
-        });
+        if (window.apiClient && window.apiClient.completeGame) {
+            window.apiClient.completeGame('game1')
+                .then(() => {
+                    return fetch('/api/game/progress', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ locationKey: 'piac', sceneId: 'merchant_rejects_joke' })
+                    });
+                })
+                .then(() => {
+                    window.location.href = 'start.html';
+                })
+                .catch(error => {
+                    console.error('Error saving game progress:', error);
+                    window.location.href = 'start.html';
+                });
+        } else {
+            fetch('/api/game/progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ locationKey: 'piac', sceneId: 'merchant_rejects_joke' })
+            }).then(() => {
+                window.location.href = 'start.html';
+            }).catch(error => {
+                console.error('Error saving game progress:', error);
+                window.location.href = 'start.html';
+            });
+        }
     });
 
     let selectedBrick = null;
@@ -162,6 +198,10 @@ $(document).ready(function () {
         }
     });
 
+    /**
+     * Check if any column exceeds the game area height (loss condition).
+     * Ends the game and handles loss UI/logic.
+     */
     function checkIfLost() {
         let gameHeight = $('#game').height();
         $('.column').each(function () {
@@ -173,28 +213,20 @@ $(document).ready(function () {
                 gameRunning = false;
                 $('#score').text('A végleges pontszámod: ' + score);
                 $('#startBtn').prop('disabled', false);
-                
-                // Save that we're returning from lost game and set scene index (same as abandoned)
-                const userStr = localStorage.getItem('user');
-                if (userStr) {
-                    const user = JSON.parse(userStr);
-                    const progressKey = `game_progress_${user.username}`;
-                    const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
-                    
-                    // Set Piac location to scene 20 (angry merchant)
-                    if (!progress.locationIndices) progress.locationIndices = {};
-                    progress.locationIndices['Piac'] = 20;
-                    
-                    localStorage.setItem(progressKey, JSON.stringify(progress));
-                }
-                
-                alert('Elvesztetted a játékot!');
-                
-                // Redirect back to the main game
-                setTimeout(function() {
+                if (window.apiClient && window.apiClient.completeGame) {
+                    window.apiClient.completeGame('game1')
+                        .then(() => {
+                            alert('Elvesztetted a játékot!');
+                            window.location.href = 'start.html';
+                        })
+                        .catch(error => {
+                            console.error('Error saving game progress:', error);
+                            window.location.href = 'start.html';
+                        });
+                } else {
+                    alert('Elvesztetted a játékot!');
                     window.location.href = 'start.html';
-                }, 100);
-                
+                }
                 return false;
             }
         });

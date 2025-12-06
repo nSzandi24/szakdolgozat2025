@@ -1,4 +1,3 @@
-// Ellenőrzi, hogy be van-e jelentkezve a felhasználó; ha nincs, átirányít a login oldalra
 (function() {
     try {
         const raw = localStorage.getItem('user');
@@ -19,7 +18,6 @@
     }
 })();
 
-// Start button redirects to start.html
 const startBtn = document.getElementById('start');
 if (startBtn) {
     startBtn.addEventListener('click', () => {
@@ -27,7 +25,6 @@ if (startBtn) {
     });
 }
 
-// Logout button clears stored user and redirects to login
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {

@@ -4,7 +4,9 @@ const path = require('path');
 const fs = require('fs');
 /**
  * GET /api/story/solution
- * Serve the solution.json file (question flow)
+ * Serve the solution.json file (question flow).
+ * @route GET /api/story/solution
+ * @returns {Object} JSON response with the solution question flow
  */
 router.get('/solution', (req, res) => {
   const solutionPath = path.join(__dirname, '../story/locations/solution.json');
@@ -26,12 +28,13 @@ const storyService = require('../services/storyService');
 const gameStateService = require('../services/gameStateService');
 const { authMiddleware } = require('../middleware/authMiddleware');
 
-// All story routes require authentication
 router.use(authMiddleware);
 
 /**
  * GET /api/story/locations
- * Get all locations metadata
+ * Get all locations metadata.
+ * @route GET /api/story/locations
+ * @returns {Object} JSON response with locations metadata
  */
 router.get('/locations', (req, res) => {
   try {
@@ -51,7 +54,10 @@ router.get('/locations', (req, res) => {
 
 /**
  * GET /api/story/:locationKey
- * Get all scenes for a specific location
+ * Get all scenes for a specific location.
+ * @route GET /api/story/:locationKey
+ * @param {string} locationKey - The key of the location
+ * @returns {Object} JSON response with location data
  */
 router.get('/:locationKey', (req, res) => {
   try {
@@ -73,7 +79,11 @@ router.get('/:locationKey', (req, res) => {
 
 /**
  * GET /api/story/:locationKey/:sceneIndex
- * Get a specific scene from a location
+ * Get a specific scene from a location.
+ * @route GET /api/story/:locationKey/:sceneIndex
+ * @param {string} locationKey - The key of the location
+ * @param {number} sceneIndex - The index of the scene
+ * @returns {Object} JSON response with scene data
  */
 router.get('/:locationKey/:sceneIndex', (req, res) => {
   try {
@@ -95,7 +105,10 @@ router.get('/:locationKey/:sceneIndex', (req, res) => {
 
 /**
  * POST /api/story/starting-scene
- * Get the starting scene ID for a location based on restart points
+ * Get the starting scene ID for a location based on restart points.
+ * @route POST /api/story/starting-scene
+ * @body {string} locationKey
+ * @returns {Object} JSON response with startingSceneId and savedSceneId
  */
 router.post('/starting-scene', async (req, res) => {
   try {
@@ -108,11 +121,9 @@ router.post('/starting-scene', async (req, res) => {
       });
     }
 
-    // Get the user's game state
     const gameState = await gameStateService.getGameState(req.userId);
     const savedSceneId = gameState.currentSceneIds[locationKey];
     
-    // Determine the starting scene based on restart points
     const startingSceneId = storyService.getStartingSceneId(
       locationKey,
       gameState,
@@ -135,7 +146,9 @@ router.post('/starting-scene', async (req, res) => {
 
 /**
  * GET /api/story/validate
- * Validate all scene references in all locations
+ * Validate all scene references in all locations.
+ * @route GET /api/story/validate
+ * @returns {Object} JSON response with validation result
  */
 router.get('/validate', (req, res) => {
   try {

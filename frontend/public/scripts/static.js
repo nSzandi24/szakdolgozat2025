@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     const res = await window.apiClient.get('/api/game/all-points');
     if (!res.success) throw new Error(res.message || 'Hiba');
     const users = res.users || [];
-    // Saját user kiemelése (username alapján)
     const myUsername = localStorage.getItem('username') || '';
     users.sort((a, b) => b.points - a.points);
     users.forEach((u, idx) => {

@@ -3,24 +3,24 @@
   "displayName": "Városi park",
   "backgroundImage": "pictures/varosipark.png",
   "scenes": [
-    {"sceneId": "arrival_narrative", "type":"narrative", "text":"Megérkeztél a városi parkba. A rendszerint nyugodt és csendes helyszínt most városi őrök vették körül. A park közepén egy pad mellett fekszik a holtest, ilyen távolról nem tudod megállapítani, hogy ki lehet az, és mi történhetett.", "once": true},
-    {"sceneId": "lucas_beckons", "type":"narrative", "text":"Lucas fő őr int neked, hogy gyere közelebb.", "once": true},
-    {"sceneId": "approach_choice", "type":"choices", "prompt":"Mit teszel?", "choices":[
+    {"sceneId": "arrival_narrative", "type":"narrative", "text":"Megérkezel a városi parkba. E békés, csendes helyet most városi őrök vigyázzák. A park közepén, egy pad mellett fekszik a holttest; innen nem láthatod, ki lehet az, s mi történt vele.", "once": true},
+    {"sceneId": "lucas_beckons", "type":"narrative", "text":"Lucas fő őr int, hogy járulj közelebb.", "once": true},
+    {"sceneId": "approach_choice", "type":"choices", "prompt":"Mit cselekszel?", "choices":[
       {"id":"lucas", "label":"Lucas fő őr", "nextScene": "lucas_greeting"}
     ], "once": true},
-    {"sceneId": "lucas_greeting", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Jó reggelt Alex detektív! Szükségünk van a segítségére ebben az ügyben.", "setState": {"lucasAvailable": true}},
-    {"sceneId": "lucas_explanation", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"A reggeli körjáratomban voltam, mikor észrevettem a testet a padnál. Azonnal értesítettem Gerald-ot, hogy hívja ide Önt. Régen nem volt már gyilkossági ügy, így remélem segíteni tud nekünk a nyomozásban."},
-    {"sceneId": "lucas_awaits_orders", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"A helyszínt nem kutattuk át, várjuk az Ön utasításait."},
+    {"sceneId": "lucas_greeting", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Jó reggelt, <PLAYER_NAME> detektív! Szükségünk van bölcsességedre e súlyos ügyben.", "setState": {"lucasAvailable": true}},
+    {"sceneId": "lucas_explanation", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Reggeli körutamon leltem a testre a padnál. Azonnal szóltam Geraldnak, hogy hívja önt ide. Rég nem volt efféle bűntett, remélem, segíthet a nyomozásban."},
+    {"sceneId": "lucas_awaits_orders", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"A helyszínt nem kutattuk át, várjuk utasításait."},
     {"sceneId": "lucas_talk", "type":"narrative", "image": "pictures/characters/lucas.png", "text": "Lucas fő őr várakozik, ha kérdésed van, fordulj hozzá!", "nextScene": "main_choice_hub"},
-    {"sceneId": "main_choice_hub", "type":"choices", "prompt":"Mit teszel?", "choices":[
+    {"sceneId": "main_choice_hub", "type":"choices", "prompt":"Mit cselekszel?", "choices":[
       {"id":"lucas2", "label":"Lucas fő őr", "nextScene": "lucas_talk", "condition": "lucasAvailable"},
-      {"id":"investigate", "label":"Helyszín átnézése", "nextScene": "investigation_instructions"},
-      {"id":"analyze", "label":"Tárgyak elemzése", "nextScene": "clue_selection", "condition": "investigationCompletedWithLucas"},
-      {"id":"analyze_alone", "label":"Tárgyak elemzése", "nextScene": "clue_selection_alone", "condition": "investigationCompletedWithoutLucas"}
+      {"id":"investigate", "label":"Helyszín átvizsgálása", "nextScene": "investigation_instructions"},
+      {"id":"analyze", "label":"Tárgyak elemzése", "nextScene": "clue_selection", "condition": "investigationCompletedWithLucas_AND_NOT_allCluesFound"},
+      {"id":"analyze_alone", "label":"Tárgyak elemzése", "nextScene": "clue_selection_alone", "condition": "investigationCompletedWithoutLucas_AND_NOT_allCluesFound"}
     ]},
-    {"sceneId": "investigation_instructions", "type":"narrative", "text": "Kedves Játékos! A Következő képet használva tudod átnézni a helyszínt és nyomokat keresni. Jól nézd meg a környezetet, és igyekezz minél több nyomot megtalálni és megjegyezni! Ezután egy listából ki tudod választani a nyomokat amik a helyszínen voltak, és a hasznosakat el tudod rakni a készletedbe."},
-    {"sceneId": "investigation_scene", "type":"investigation", "image": "pictures/nyom.png", "buttonLabel": "Helyszín átnézésének befejezése", "setState": {"investigationCompletedWithLucas": true}, "nextScene": "main_choice_hub"},
-    {"sceneId": "clue_selection", "type":"choices", "prompt":"Mit talált detektív?", "condition": "lucasAvailable", "image": "pictures/characters/lucas.png", "choices":[
+    {"sceneId": "investigation_instructions", "type":"narrative", "text": "Kedves Játékos! A következő képet használva átvizsgálhatod a helyszínt, s nyomokat kereshetsz. Jól nézd meg a környezetet, s igyekezz minél több nyomot felfedezni és megjegyezni! Ezután egy listából kiválaszthatod a helyszínen talált nyomokat, s a hasznosakat elteheted készletedbe."},
+    {"sceneId": "investigation_scene", "type":"investigation", "image": "pictures/nyom.png", "buttonLabel": "Helyszín átvizsgálásának befejezése", "setState": {"investigationCompletedWithLucas": true}, "addMinutes": 20, "nextScene": "main_choice_hub"},
+    {"sceneId": "clue_selection", "type":"choices", "prompt":"Mit leltél, detektív?", "condition": "lucasAvailable", "image": "pictures/characters/lucas.png", "choices":[
       {"id":"nyom1", "label":"Kalapács", "nextScene": "clue_hammer"},
       {"id":"nyom2", "label":"Kendő", "nextScene": "clue_handkerchief"},
       {"id":"nyom3", "label":"Gyümölcsök", "nextScene": "clue_fruits"},
@@ -40,7 +40,7 @@
       {"id":"nyom17", "label":"Madártoll", "nextScene": "clue_irrelevant"},
       {"id":"finish", "label":"Nyomok keresésének befejezése", "nextScene": "lucas_departs"}
     ]},
-    {"sceneId": "clue_selection_alone", "type":"choices", "prompt":"Mit találsz?", "choices":[
+    {"sceneId": "clue_selection_alone", "type":"choices", "prompt":"Mit leltél?", "choices":[
       {"id":"nyom1", "label":"Kalapács", "nextScene": "clue_hammer_alone"},
       {"id":"nyom2", "label":"Kendő", "nextScene": "clue_handkerchief_alone"},
       {"id":"nyom3", "label":"Gyümölcsök", "nextScene": "clue_fruits_alone"},
@@ -60,16 +60,20 @@
       {"id":"nyom17", "label":"Madártoll", "nextScene": "clue_irrelevant_alone"},
       {"id":"finish", "label":"Nyomok keresésének befejezése", "nextScene": "main_choice_hub"}
     ]},
-    {"sceneId": "clue_hammer", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Ez a kalapács véres. Valószínűleg ez lehet a gyilkos eszköze.", "addItem": "Kalapács", "nextScene": "clue_selection"},
-    {"sceneId": "clue_handkerchief", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Ez a kendő a William báró címerét tartalmazza. Lehet a szolgáló nő a családnak dolgozott.", "addItem": "Kendő", "location": "Báró birtoka", "nextScene": "clue_selection"},
-    {"sceneId": "clue_fruits", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"A gyümölcsök még frissnek tűnnek. Lehet a piacról jött éppen hazafele mikor megtámadták.", "addItem": "Gyümölcsök", "location": "Piac", "nextScene": "clue_selection"},
-    {"sceneId": "clue_irrelevant", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Ez a tárgy nem érdekes a nyomozás ügyében.", "nextScene": "clue_selection"},
-    {"sceneId": "clue_hammer_alone", "type":"narrative", "text":"Ez a kalapács véres. Valószínűleg ez lehet a gyilkos eszköze.", "addItem": "Kalapács", "nextScene": "clue_selection_alone"},
-    {"sceneId": "clue_handkerchief_alone", "type":"narrative", "text":"Ez a kendő a William báró címerét tartalmazza. Lehet a szolgáló nő a családnak dolgozott.", "addItem": "Kendő", "location": "Báró birtoka", "nextScene": "clue_selection_alone"},
-    {"sceneId": "clue_fruits_alone", "type":"narrative", "text":"A gyümölcsök még frissnek tűnnek. Lehet a piacról jött éppen hazafele mikor megtámadták.", "addItem": "Gyümölcsök", "location": "Piac", "nextScene": "clue_selection_alone"},
-    {"sceneId": "clue_irrelevant_alone", "type":"narrative", "text":"Ez a tárgy nem érdekes a nyomozás ügyében.", "nextScene": "clue_selection_alone"},
-    {"sceneId": "lucas_departs", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Ebben az esetben hogyha nincs már szükség rám akkor visszatérnék az őrsre.", "location": "Városi őrség", "setState": {"lucasAvailable": false, "investigationCompletedWithLucas": false, "investigationCompletedWithoutLucas": true}, "nextScene": "lucas_left"},
-    {"sceneId": "lucas_left", "type":"narrative", "text":"Lucas városi őr az őrségen van, ha bármi kérdésed van ott keresd.", "nextScene": "main_choice_hub", "startFromHereUnless": ""}
+    {"sceneId": "clue_hammer", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"E kalapács véres. Alighanem ez lehetett a gyilkos eszköze.", "addItem": "Kalapács", "nextScene": "clue_selection"},
+    {"sceneId": "clue_handkerchief", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"E kendőn William báró címere díszeleg. Talán a szolgáló a családnak dolgozott.", "addItem": "Kendő", "location": "Báró birtoka", "nextScene": "infoparkbaro"},
+    {"sceneId":"infoparkbaro", "type":"narrative", "text":"Feloldottad a Báró birtoka helyszínét! Mostantól oda is elmehetsz.", "once": true,  "nextScene": "clue_selection"},
+    {"sceneId": "clue_fruits", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"A gyümölcsök még frissek. Lehet, a piacról tartott hazafelé, mikor megtámadták.", "addItem": "Gyümölcsök", "location": "Piac", "nextScene": "infoparkpiac"},
+    {"sceneId":"infoparkpiac", "type":"narrative", "text":"Feloldottad a Piac helyszínét! Mostantól oda is elmehetsz.", "once": true, "nextScene": "clue_selection"},
+    {"sceneId": "clue_irrelevant", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"E tárgy nem bír jelentőséggel a nyomozásban.", "nextScene": "clue_selection"},
+    {"sceneId": "clue_hammer_alone", "type":"narrative", "text":"E kalapács véres. Alighanem ez lehetett a gyilkos eszköze.", "addItem": "Kalapács", "nextScene": "clue_selection_alone"},
+    {"sceneId": "clue_handkerchief_alone", "type":"narrative", "text":"E kendőn William báró címere díszeleg. Talán a szolgáló a családnak dolgozott.", "addItem": "Kendő", "location": "Báró birtoka", "nextScene":"infoparkbaro_alone"},
+    {"sceneId":"infoparkbaro_alone", "type":"narrative", "text":"Feloldottad a Báró birtoka helyszínét! Mostantól oda is elmehetsz.", "once": true,  "nextScene": "clue_selection_alone"},
+    {"sceneId": "clue_fruits_alone", "type":"narrative", "text":"A gyümölcsök még frissek. Lehet, a piacról tartott hazafelé, mikor megtámadták.", "addItem": "Gyümölcsök", "location": "Piac", "nextScene":"infoparkpiac_alone"},
+    {"sceneId":"infoparkpiac_alone", "type":"narrative", "text":"Feloldottad a Piac helyszínét! Mostantól oda is elmehetsz.", "once": true, "nextScene": "clue_selection_alone"},
+    {"sceneId": "clue_irrelevant_alone", "type":"narrative", "text":"E tárgy nem bír jelentőséggel a nyomozásban.", "nextScene": "clue_selection_alone"},
+    {"sceneId": "lucas_departs", "type":"narrative", "image": "pictures/characters/lucas.png", "text":"Ha már nincs szükség rám, visszatérek az őrsre.", "location": "Városi őrség", "setState": {"lucasAvailable": false, "investigationCompletedWithLucas": false, "investigationCompletedWithoutLucas": true}, "nextScene": "lucas_left"},
+    {"sceneId": "lucas_left", "type":"narrative", "text":"Lucas városi őr most az őrségen tartózkodik. Ha kérdésed volna, ott keresd.", "nextScene": "main_choice_hub", "startFromHereUnless": ""}
     ]
 }
 

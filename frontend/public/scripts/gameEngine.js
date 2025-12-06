@@ -1,4 +1,3 @@
-// (function() { // Removed duplicate wrapper
     
 
 /**
@@ -6,15 +5,50 @@
  */
 
 (async function() {
-    // Game state (loaded from backend)
-        // Solution question flow using solution.json (must be after all function/var declarations)
+        document.addEventListener('DOMContentLoaded', async function() {
+            const notesTextarea = document.getElementById('playerNotes');
+            const saveBtn = document.getElementById('saveNotesBtn');
+            const statusSpan = document.getElementById('notesSaveStatus');
+            try {
+                const state = await apiClient.getGameState();
+                if (state && state.gameState && typeof state.gameState.notes === 'string') {
+                    notesTextarea.value = state.gameState.notes;
+                }
+            } catch (e) {
+                statusSpan.textContent = 'Nem sikerült betölteni a jegyzetet.';
+            }
+            saveBtn.addEventListener('click', async () => {
+                const notes = notesTextarea.value;
+                try {
+                    await apiClient.updateGameState({ notes });
+                    statusSpan.textContent = 'Jegyzet mentve!';
+                } catch (e) {
+                    statusSpan.textContent = 'Mentés sikertelen.';
+                }
+            });
+        });
+    let addMinutes, loadTimeFromBackend, setTime;
+    try {
+        const timeModule = await import('./time.constans.js');
+        addMinutes = timeModule.addMinutes;
+        loadTimeFromBackend = timeModule.loadTimeFromBackend;
+        setTime = timeModule.setTime;
+        window.addMinutes = addMinutes;
+        window.loadTimeFromBackend = loadTimeFromBackend;
+        window.setTime = setTime;
+    } catch (e) {
+        console.error('Failed to load time.constans.js:', e);
+        addMinutes = () => {};
+        loadTimeFromBackend = async () => {};
+        setTime = () => {};
+    }
+
         async function startSolutionFlow() {
             clearAreas();
             let answers = {};
             let questions = [];
             console.log('[startSolutionFlow] Triggered');
             try {
-                // Try to load questions from solution.json
                 const res = await fetch('/api/story/solution');
                 if (!res.ok) throw new Error('solution.json not found');
                 questions = await res.json();
@@ -30,7 +64,6 @@
                 clearAreas();
                 console.log('[askNext] idx:', idx, 'questions.length:', questions.length);
                 if (idx >= questions.length) {
-                    // Validate all required keys are present
                     const requiredKeys = ['weapon', 'killer', 'motive', 'kidnapper', 'kidnapMotive', 'ghostskin'];
                     const missing = requiredKeys.filter(k => !(k in answers));
                     if (missing.length > 0) {
@@ -38,9 +71,7 @@
                         console.warn('[askNext] Missing required answers:', missing);
                         return;
                     }
-                    // All answered, save to backend
                     try {
-                        // Check authentication by making a lightweight authenticated request
                         const stateResp = await apiClient.getGameState?.();
                         if (stateResp && stateResp.success === false && stateResp.message && stateResp.message.includes('jelentkezzen be')) {
                             dialogueEl.innerHTML = '<p>A megoldás mentéséhez be kell jelentkezni. Átirányítás a bejelentkezéshez...</p>';
@@ -92,10 +123,8 @@
             askNext();
         }
 
-        // Attach to a global for triggering from UI
         window.startSolutionFlow = startSolutionFlow;
 
-        // Optionally, add a handler for a button with id 'solveCaseBtn'
         document.addEventListener('DOMContentLoaded', function() {
             const solveBtn = document.getElementById('solveCaseBtn');
             if (solveBtn) {
@@ -108,7 +137,6 @@
     let locationsMetadata = null;
     let responseActive = false;
 
-    // DOM elements
     const dialogueEl = document.getElementById('dialogue');
     const choicesEl = document.getElementById('choices');
     const characterImageEl = document.getElementById('characterImage');
@@ -118,25 +146,24 @@
     const locationsListEl = document.getElementById('locationsList');
 
     /**
-     * Initialize the game
+     * Initializes the game by loading game state, time, locations, and rendering the current scene.
+     * Sets up location buttons and handles errors during initialization.
+     * @async
+     * @function initializeGame
      */
     async function initializeGame() {
         try {
-            // Load game state from backend
             const response = await apiClient.getGameState();
             gameState = response.gameState;
-            
-            // Load locations metadata
+            await loadTimeFromBackend();
+
             const locationsResponse = await apiClient.getLocations();
             locationsMetadata = locationsResponse.locations;
 
-            // Load current location scenes
             await loadLocation(gameState.currentLocation);
 
-            // Render current scene
             await renderCurrentScene();
 
-            // Setup location buttons
             setupLocationButtons();
 
         } catch (error) {
@@ -146,7 +173,10 @@
     }
 
     /**
-     * Load a location's scenes from backend
+     * Loads a location's scenes and updates the background image.
+     * @async
+     * @param {string} locationKey - The key of the location to load.
+     * @function loadLocation
      */
     async function loadLocation(locationKey) {
         try {
@@ -154,7 +184,6 @@
             currentLocation = response.location.locationKey;
             locationScenes = response.location.scenes;
             
-            // Update background
             updateBackground(response.location.backgroundImage);
         } catch (error) {
             console.error(`Failed to load location ${locationKey}:`, error);
@@ -163,21 +192,27 @@
     }
 
     /**
-     * Update background image
+     * Updates the background image of the game.
+     * @param {string} backgroundImage - The URL of the background image.
+     * @function updateBackground
      */
     function updateBackground(backgroundImage) {
         document.body.style.backgroundImage = `url('${backgroundImage}')`;
     }
 
     /**
-     * Get current scene ID for current location
+     * Gets the current scene ID for the current location.
+     * @returns {string} The current scene ID.
+     * @function getCurrentSceneId
      */
     function getCurrentSceneId() {
         return gameState.currentSceneIds[currentLocation];
     }
 
     /**
-     * Get current scene
+     * Gets the current scene object for the current location.
+     * @returns {Object|null} The current scene object or null if not found.
+     * @function getCurrentScene
      */
     function getCurrentScene() {
         const sceneId = getCurrentSceneId();
@@ -185,37 +220,34 @@
             return null;
         }
         
-        // If no sceneId set, return first scene
         if (!sceneId) {
             return locationScenes[0];
         }
         
-        // Find scene by sceneId
         return locationScenes.find(scene => scene.sceneId === sceneId) || null;
     }
 
     /**
-     * Render the current scene
+     * Renders the current scene based on its type and updates the UI accordingly.
+     * Handles scene progression, state updates, and item management.
+     * @async
+     * @function renderCurrentScene
      */
     async function renderCurrentScene() {
         const scene = getCurrentScene();
         const sceneId = getCurrentSceneId();
         
-        // Check if we've reached the end of scenes
         if (!scene) {
             console.warn('No more scenes available in this location');
             return;
         }
         
-        // Check if scene should be skipped (once scenes already seen)
         if (scene.once) {
             const sceneMarker = `${currentLocation}_${scene.sceneId}`;
             if (gameState.seenOnceScenes.includes(sceneMarker)) {
-                // Skip to next scene
                 await progressToNextScene();
                 return;
             } else {
-                // Mark as seen
                 await apiClient.updateGameState({
                     seenOnceScenes: [...gameState.seenOnceScenes, sceneMarker]
                 });
@@ -223,19 +255,15 @@
             }
         }
 
-        // Check if this is a restart point (startFromHereUnless property exists)
         if (scene.startFromHereUnless !== undefined) {
             const restartPointId = `${currentLocation}_${scene.sceneId}`;
             if (!gameState.reachedRestartPoints.includes(restartPointId)) {
-                // Mark this restart point as reached
                 await apiClient.markRestartPoint(currentLocation, scene.sceneId);
                 gameState.reachedRestartPoints.push(restartPointId);
             }
         }
 
-        // Check conditions - find next valid scene if condition not met
         if (scene.condition && !checkCondition(scene.condition)) {
-            // Find the next scene that either has no condition or has a met condition
             await findNextValidScene(scene.sceneId);
             return;
         }
@@ -243,7 +271,6 @@
         clearAreas();
         updateItemsList();
 
-        // Handle scene actions FIRST (before rendering)
         if (scene.setState) {
             await apiClient.setFlags(scene.setState);
             Object.assign(gameState.gameFlags, scene.setState);
@@ -265,7 +292,6 @@
         }
 
         if (scene.location) {
-            // Convert display name to location key
             const locationKey = getLocationKeyFromName(scene.location);
             await apiClient.discoverLocation(locationKey);
             if (!gameState.discoveredLocations.includes(locationKey)) {
@@ -274,13 +300,11 @@
             }
         }
 
-        // Handle redirect actions
         if (scene.action === 'redirect' && scene.redirectUrl) {
             window.location.href = scene.redirectUrl;
             return;
         }
 
-        // Handle different scene types
         if (scene.type === 'narrative') {
             renderNarrative(scene);
         } else if (scene.type === 'choices') {
@@ -289,18 +313,43 @@
             renderInvestigation(scene);
         } else if (scene.type === 'evidence_choices') {
             renderEvidenceChoices(scene);
+        } else if (scene.type === 'location_examine') {
+            const examineBtn = document.createElement('button');
+            examineBtn.textContent = 'Helyszín átnézése';
+            examineBtn.className = 'choice-bubble';
+            examineBtn.addEventListener('click', () => {
+                addMinutes(20); 
+            });
+            choicesEl.appendChild(examineBtn);
         }
     }
 
     /**
-     * Render narrative scene
+     * Renders a narrative scene, displaying text and images, and sets up the next button.
+     * @param {Object} scene - The scene object to render.
+     * @function renderNarrative
      */
     function renderNarrative(scene) {
         const p = document.createElement('p');
-        p.textContent = scene.text;
+        let text = scene.text;
+        let playerName = null;
+        try {
+            const raw = localStorage.getItem('user');
+            if (raw) {
+                const user = JSON.parse(raw);
+                if (user && user.username) {
+                    playerName = user.username;
+                }
+            }
+        } catch (e) {
+            playerName = null;
+        }
+        if (playerName) {
+            text = text.replace(/<PLAYER_NAME>/g, playerName);
+        }
+        p.textContent = text;
         dialogueEl.appendChild(p);
 
-        // Show character image if present
         if (scene.image) {
             const img = document.createElement('img');
             img.src = scene.image;
@@ -308,13 +357,11 @@
             characterImageEl.appendChild(img);
         }
 
-        // Add next button - either to specific scene or next sequential scene
         const nextBtn = document.createElement('button');
         nextBtn.textContent = 'Következő';
         nextBtn.className = 'next-btn';
 
         if (scene.action === 'redirect' && scene.redirectUrl) {
-            // On click, redirect to the given URL
             nextBtn.addEventListener('click', () => {
                 window.location.href = scene.redirectUrl;
             });
@@ -324,10 +371,8 @@
                 await switchLocation(locationKey, true);
             });
         } else if (scene.nextScene !== undefined) {
-            // Go to specific scene by sceneId
             nextBtn.addEventListener('click', () => progressToSceneById(scene.nextScene));
         } else {
-            // Go to next sequential scene
             nextBtn.addEventListener('click', progressToNextScene);
         }
 
@@ -335,10 +380,34 @@
     }
 
     /**
-     * Render choices scene
+     * Renders a choices scene, displaying available choices and handling their logic.
+     * @param {Object} scene - The scene object to render.
+     * @function renderChoices
      */
     function renderChoices(scene) {
-        // Add prompt to choices section first
+                const isCharlotteRoom = currentLocation === 'charlotteszoba';
+                const isEvidenceSelection = scene.sceneId === 'evidence_selection';
+                const foundStains = gameState.collectedItems.includes('Érdekes foltok');
+                const foundBerries = gameState.collectedItems.includes('Bogyók az ágy mellől');
+                const foundChest = gameState.gameFlags && gameState.gameFlags.hasNaplo === true;
+                const allCharlotteCluesFound = foundStains && foundBerries && foundChest;
+
+                if (isCharlotteRoom && isEvidenceSelection && allCharlotteCluesFound) {
+                    const p = document.createElement('p');
+                    p.textContent = 'Minden fontos nyomot megtaláltál Charlotte szobájában!';
+                    p.style.fontWeight = 'bold';
+                    p.style.margin = '16px 0';
+                    choicesEl.appendChild(p);
+
+                    const nextBtn = document.createElement('button');
+                    nextBtn.textContent = 'Következő';
+                    nextBtn.className = 'next-btn';
+                    nextBtn.addEventListener('click', () => {
+                        progressToSceneById('main_choice');
+                    });
+                    choicesEl.appendChild(nextBtn);
+                    return;
+                }
         if (scene.prompt) {
             const promptP = document.createElement('p');
             promptP.textContent = scene.prompt;
@@ -353,26 +422,85 @@
             characterImageEl.appendChild(img);
         }
 
-        // Render choices
+
+        const isPark = currentLocation === 'varosipark';
+        const isClueSelection = scene.sceneId === 'clue_selection' || scene.sceneId === 'clue_selection_alone';
+        const foundHammer = gameState.collectedItems.includes('Kalapács');
+        const foundHandkerchief = gameState.collectedItems.includes('Kendő');
+        const foundFruits = gameState.collectedItems.includes('Gyümölcsök');
+        const allCluesFound = foundHammer && foundHandkerchief && foundFruits;
+
+        if (isPark && isClueSelection && allCluesFound && !gameState.gameFlags.parkCluesFoundMsgShown) {
+            const p = document.createElement('p');
+            p.textContent = 'Minden fontos nyomot megtaláltál a parkban!';
+            p.style.fontWeight = 'bold';
+            p.style.margin = '16px 0';
+            choicesEl.appendChild(p);
+            gameState.gameFlags.parkCluesFoundMsgShown = true;
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'Következő';
+            nextBtn.className = 'next-btn';
+            nextBtn.addEventListener('click', () => {
+                renderCurrentScene();
+            });
+            choicesEl.appendChild(nextBtn);
+            return;
+        }
+
         scene.choices.forEach(choice => {
-            // Check conditions
+            if ((choice.id === 'game1' && gameState.gameFlags && gameState.gameFlags.game1Played) ||
+                (choice.id === 'game2' && gameState.gameFlags && gameState.gameFlags.game2Played) ||
+                (choice.id === 'help_packing' && gameState.gameFlags && gameState.gameFlags.piacGamePlayed)) {
+                return;
+            }
+            if (isPark && isClueSelection) {
+                if (choice.label === 'Kalapács' && foundHammer) return;
+                if (choice.label === 'Kendő' && foundHandkerchief) return;
+                if (choice.label === 'Gyümölcsök' && foundFruits) return;
+            }
+            if (isCharlotteRoom && isEvidenceSelection && allCharlotteCluesFound) {
+                return;
+            }
+            if (isCharlotteRoom && isEvidenceSelection) {
+                if (choice.label === 'Érdekes foltok' && foundStains) return;
+                if (choice.label === 'Bogyók az ágynál' && foundBerries) return;
+                if (choice.label === 'Láda' && foundChest) return;
+            }
+            if (isPark && isClueSelection && gameState.gameFlags.parkAnalysisFinished && choice.id !== 'finish') {
+                return;
+            }
             if (choice.condition && !checkCondition(choice.condition)) {
                 return;
             }
-
-            // Check item requirements
             if (choice.requiresItem && !gameState.collectedItems.includes(choice.requiresItem)) {
                 return;
             }
-
             const button = document.createElement('button');
             button.textContent = choice.label;
             button.className = 'choice-bubble';
-            button.addEventListener('click', () => handleChoice(choice));
+            button.addEventListener('click', async () => {
+                addMinutes(5); 
+                if (isPark && isClueSelection && choice.id === 'finish') {
+                    await apiClient.setFlags({ parkAnalysisFinished: true });
+                    gameState.gameFlags.parkAnalysisFinished = true;
+                }
+                if (choice.id === 'game1') {
+                    await apiClient.setFlags({ game1Played: true });
+                    gameState.gameFlags.game1Played = true;
+                }
+                if (choice.id === 'game2') {
+                    await apiClient.setFlags({ game2Played: true });
+                    gameState.gameFlags.game2Played = true;
+                }
+                if (choice.id === 'help_packing') {
+                    await apiClient.setFlags({ piacGamePlayed: true });
+                    gameState.gameFlags.piacGamePlayed = true;
+                }
+                handleChoice(choice);
+            });
             choicesEl.appendChild(button);
         });
 
-        // Evidence prompt - shows as disabled button to indicate items are clickable
         if (scene.evidencePrompt) {
             const evidenceBtn = document.createElement('button');
             evidenceBtn.textContent = scene.evidencePrompt;
@@ -383,10 +511,11 @@
     }
 
     /**
-     * Render investigation scene
+     * Renders an investigation scene, displaying an image and a finish button.
+     * @param {Object} scene - The scene object to render.
+     * @function renderInvestigation
      */
     function renderInvestigation(scene) {
-        // Create image container with white border
         const imageContainer = document.createElement('div');
         imageContainer.style.background = '#ffffff';
         imageContainer.style.border = '3px solid #8b7355';
@@ -412,6 +541,9 @@
         finishBtn.textContent = scene.buttonLabel || 'Befejezés';
         finishBtn.className = 'choice-bubble';
         finishBtn.addEventListener('click', async () => {
+
+            const minutesToAdd = typeof scene.addMinutes === 'number' ? scene.addMinutes : 5;
+            addMinutes(minutesToAdd);
             await apiClient.setFlags({ investigationCompleted: true });
             gameState.gameFlags.investigationCompleted = true;
             progressToSceneById(scene.nextScene);
@@ -420,10 +552,11 @@
     }
 
     /**
-     * Render evidence choices scene
+     * Renders an evidence choices scene, displaying available evidence choices.
+     * @param {Object} scene - The scene object to render.
+     * @function renderEvidenceChoices
      */
     function renderEvidenceChoices(scene) {
-        // Add prompt to choices section first
         if (scene.prompt) {
             const promptP = document.createElement('p');
             promptP.textContent = scene.prompt;
@@ -452,17 +585,47 @@
     }
 
     /**
-     * Handle user choice
+     * Handles a user choice, updating game state and progressing scenes as needed.
+     * @async
+     * @param {Object} choice - The choice object selected by the user.
+     * @function handleChoice
      */
     async function handleChoice(choice) {
         if (responseActive) return;
         responseActive = true;
 
-        // Ha a choice autoSwitch és location mezőt tartalmaz, válts helyszínt
-
-        // Special case: if the current scene is 'case_solved_question' and the player selects 'Igen, megoldom az ügyet.'
         const currentScene = getCurrentScene();
-        // Nyomornegyed döntés mentése accepted_help/declined_help értékkel
+        if (currentScene && currentScene.sceneId === 'home_main_choice' && choice.id === 'rest') {
+            const START_TIME_MINUTES = 360; // 6:00
+            let investigationTime = typeof gameState.investigationTime === 'number' ? gameState.investigationTime : 0;
+            let totalMinutes = investigationTime + START_TIME_MINUTES;
+            let daysPassed = Math.floor(totalMinutes / (24 * 60));
+            let dayMinutes = totalMinutes % (24 * 60);
+            let currentHour = Math.floor(dayMinutes / 60) + 6;
+            if (currentHour >= 24) currentHour -= 24;
+            let currentMinute = dayMinutes % 60;
+            let targetDay = daysPassed;
+            if (currentHour > 20 || (currentHour === 20 && currentMinute > 0)) {
+                targetDay += 1;
+            }
+            let newInvestigationTime = (targetDay * 24 * 60) + (20 * 60) - START_TIME_MINUTES;
+            if (newInvestigationTime <= investigationTime) {
+                targetDay += 1;
+                newInvestigationTime = (targetDay * 24 * 60) + (20 * 60) - START_TIME_MINUTES;
+            }
+            await apiClient.updateGameState({
+                time: { hour: 20, minute: 0 },
+                investigationTime: newInvestigationTime
+            });
+            const response = await apiClient.getGameState();
+            gameState = response.gameState;
+            if (typeof loadTimeFromBackend === 'function') {
+                await loadTimeFromBackend();
+            }
+            await renderCurrentScene();
+            responseActive = false;
+            return;
+        }
         if (currentScene && currentScene.sceneId === 'nyomornegyed_clue_choice') {
             let decision = null;
             if (choice.id === 'accept_offer') {
@@ -471,17 +634,24 @@
                 decision = 'declined_help';
             }
             if (decision) {
+                await apiClient.setFlags({ nyomornegyed_decision: decision });
                 await apiClient.updateGameState({ nyomornegyed_decision: decision });
             }
+        }
+        if (choice.setState) {
+            await apiClient.setFlags(choice.setState);
+            await apiClient.updateGameState(choice.setState);
+        }
+        if (currentScene && currentScene.setState) {
+            await apiClient.setFlags(currentScene.setState);
+            await apiClient.updateGameState(currentScene.setState);
         }
 
         if (currentScene && currentScene.sceneId === 'case_solved_question' && choice.label === 'Igen, megoldom az ügyet.') {
             await window.startSolutionFlow();
         } else if (choice.autoSwitch && choice.location) {
             const locationKey = getLocationKeyFromName(choice.location);
-            // Skip confirmation for autoSwitch
             await switchLocation(locationKey, true);
-            // Ha nextScene is van, lépj arra a jelenetre az új helyszínen
             if (choice.nextScene !== undefined) {
                 await progressToSceneById(choice.nextScene);
             }
@@ -493,7 +663,9 @@
     }
 
     /**
-     * Progress to next scene (sequential progression)
+     * Progresses to the next scene in the current location.
+     * @async
+     * @function progressToNextScene
      */
     async function progressToNextScene() {
         const currentScene = getCurrentScene();
@@ -502,52 +674,49 @@
             return;
         }
         
-        // Find current scene index in array
         const currentIndex = locationScenes.findIndex(s => s.sceneId === currentScene.sceneId);
         const nextIndex = currentIndex + 1;
         
-        // Check if next scene exists
         if (nextIndex >= locationScenes.length) {
             console.warn('No more scenes available in this location');
             return;
         }
         
-        // Progress to next scene by its sceneId
         await progressToSceneById(locationScenes[nextIndex].sceneId);
     }
 
     /**
-     * Find the next valid scene (skips scenes with unmet conditions)
+     * Finds and progresses to the next valid scene, skipping those with unmet conditions.
+     * @async
+     * @param {string} currentSceneId - The current scene ID to start searching from.
+     * @function findNextValidScene
      */
     async function findNextValidScene(currentSceneId) {
-        // Find current scene index in array
         const currentIndex = locationScenes.findIndex(s => s.sceneId === currentSceneId);
         
-        // Search from next scene onwards for a scene that can be shown
         for (let i = currentIndex + 1; i < locationScenes.length; i++) {
             const scene = locationScenes[i];
             
-            // If scene has no condition, or condition is met, go to it
             if (!scene.condition || checkCondition(scene.condition)) {
                 await progressToSceneById(scene.sceneId);
                 return;
             }
         }
         
-        // If no valid scene found, log warning
         console.warn('No valid scene found with met conditions');
     }
 
     /**
-     * Progress to specific scene by sceneId
+     * Progresses to a specific scene by its sceneId.
+     * @async
+     * @param {string} sceneId - The ID of the scene to progress to.
+     * @function progressToSceneById
      */
     async function progressToSceneById(sceneId) {
         try {
-            // Update backend
             const response = await apiClient.progressScene(currentLocation, sceneId);
             gameState = response.gameState;
 
-            // Render new scene
             await renderCurrentScene();
         } catch (error) {
             console.error('Failed to progress scene:', error);
@@ -555,17 +724,18 @@
     }
 
     /**
-     * Switch to a different location
+     * Switches to a different location, handling confirmation and time logic.
+     * @async
+     * @param {string} locationKey - The key of the location to switch to.
+     * @param {boolean} [skipConfirmation=false] - Whether to skip confirmation dialog.
+     * @function switchLocation
      */
     async function switchLocation(locationKey, skipConfirmation = false) {
         try {
             if (!gameState.gameFlags) gameState.gameFlags = {};
 
-            // Location change confirmation
             if (!skipConfirmation) {
-                // Show confirmation scene before switching
                 clearAreas();
-                // Use current location's background
                 updateBackground(locationsMetadata && locationsMetadata[currentLocation]?.backgroundImage || '');
                 const box = document.createElement('div');
                 box.style.background = '#ffffff';
@@ -601,7 +771,6 @@
                 btnNo.className = 'choice-bubble';
                 btnNo.style.minWidth = '120px';
                 btnNo.addEventListener('click', async () => {
-                    // Re-render current scene, stay here
                     await renderCurrentScene();
                 });
                 btnContainer.appendChild(btnYes);
@@ -613,48 +782,40 @@
             }
 
             if (locationKey === 'nyomornegyed') {
-                if (gameState.gameFlags.nyomornegyedVisited) {
+                const START_TIME_MINUTES = 360; // 6:00
+                const totalMinutes = (typeof gameState.investigationTime === 'number' ? gameState.investigationTime : 0) + START_TIME_MINUTES;
+                const dayMinutes = totalMinutes % (24 * 60);
+                let hour = Math.floor(dayMinutes / 60) + 6;
+                if (hour >= 24) hour -= 24;
+                const minute = dayMinutes % 60;
+                const isNight = (hour >= 20 || hour < 5);
+                if (!isNight) {
                     await loadLocation(locationKey);
                     clearAreas();
                     updateBackground('pictures/nyomornegyed.png');
                     const p = document.createElement('p');
-                    p.textContent = 'A nyomornegyedbe túl veszélyes visszatérni. Jobb, ha inkább hazamész.';
+                    p.textContent = 'Túl korán van ahhoz hogy erre a helyszínre jöhess.';
                     dialogueEl.appendChild(p);
-                    const nextBtn = document.createElement('button');
-                    nextBtn.textContent = 'Következő';
-                    nextBtn.className = 'next-btn';
-                    nextBtn.addEventListener('click', async () => {
-                        await switchLocation('otthon', true);
-                    });
-                    nextButtonContainer.appendChild(nextBtn);
                     return;
-                } else {
-                    gameState.gameFlags.nyomornegyedVisited = true;
-                    await apiClient.setFlags({ nyomornegyedVisited: true });
                 }
             }
 
-            // Load new location
+            addMinutes(40); 
             await loadLocation(locationKey);
 
-            // Get the starting scene ID based on restart points
             const startingSceneResponse = await apiClient.getStartingScene(locationKey);
             const startingSceneId = startingSceneResponse.startingSceneId;
 
-            // Update game state with new location and starting scene
             const response = await apiClient.updateGameState({
                 currentLocation: locationKey,
             });
             gameState = response.gameState;
 
-            // Set the scene to the starting scene
             await apiClient.progressScene(locationKey, startingSceneId);
             gameState.currentSceneIds[locationKey] = startingSceneId;
 
-            // Update location buttons to highlight current location
             setupLocationButtons();
 
-            // Render starting scene of new location
             await renderCurrentScene();
         } catch (error) {
             console.error(`Failed to switch to location ${locationKey}:`, error);
@@ -662,12 +823,14 @@
     }
 
     /**
-     * Get location key from display name
+     * Gets the location key from a display name.
+     * @param {string} displayName - The display name of the location.
+     * @returns {string} The location key.
+     * @function getLocationKeyFromName
      */
     function getLocationKeyFromName(displayName) {
         if (!locationsMetadata) return displayName;
         
-        // Map of display names to keys
         const nameToKey = {
             'Otthon': 'otthon',
             'Városi park': 'varosipark',
@@ -682,10 +845,54 @@
     }
 
     /**
-     * Check condition
+     * Checks a game condition for scene progression or choice availability.
+     * @param {string} condition - The condition to check.
+     * @returns {boolean} True if the condition is met, false otherwise.
+     * @function checkCondition
      */
     function checkCondition(condition) {
-        // Special conditions
+                                if (condition === 'piacLookedAround') {
+                                    return gameState.gameFlags && gameState.gameFlags.piacLookedAround === true;
+                                }
+                                if (condition === 'NOT_piacLookedAround') {
+                                    return !(gameState.gameFlags && gameState.gameFlags.piacLookedAround === true);
+                                }
+                        if (condition === 'allCharlotteCluesFound') {
+                            if (!gameState || !gameState.collectedItems) return false;
+                            return (
+                                gameState.collectedItems.includes('Érdekes foltok') &&
+                                gameState.collectedItems.includes('Bogyók az ágy mellől') &&
+                                gameState.gameFlags && gameState.gameFlags.hasNaplo === true
+                            );
+                        }
+                        if (condition === 'NOT_allCharlotteCluesFound') {
+                            if (!gameState || !gameState.collectedItems) return true;
+                            return !(
+                                gameState.collectedItems.includes('Érdekes foltok') &&
+                                gameState.collectedItems.includes('Bogyók az ágy mellől') &&
+                                gameState.gameFlags && gameState.gameFlags.hasNaplo === true
+                            );
+                        }
+                if (condition === 'allCluesFound') {
+                    if (!gameState || !gameState.collectedItems) return false;
+                    return (
+                        gameState.collectedItems.includes('Kalapács') &&
+                        gameState.collectedItems.includes('Kendő') &&
+                        gameState.collectedItems.includes('Gyümölcsök')
+                    );
+                }
+                if (condition === 'NOT_allCluesFound') {
+                    if (!gameState || !gameState.collectedItems) return true;
+                    return !(
+                        gameState.collectedItems.includes('Kalapács') &&
+                        gameState.collectedItems.includes('Kendő') &&
+                        gameState.collectedItems.includes('Gyümölcsök')
+                    );
+                }
+                if (condition && condition.includes('_AND_')) {
+                    const parts = condition.split('_AND_');
+                    return parts.every(part => checkCondition(part));
+                }
         if (condition === 'investigationCompleted') {
             return gameState.gameFlags.investigationCompleted === true;
         }
@@ -717,15 +924,15 @@
             return gameState.gameFlags.game2Failure === true;
         }
         if (condition === 'ghostskinInfoNeeded') {
-            return gameState.gameFlags.ghostskinInfoNeeded === true;
+            return (gameState.gameFlags.ghostskinInfoNeeded === true) || (gameState.ghostskinInfoNeeded === true);
         }
 
-        // Default: check if flag exists and is truthy
-        return gameState.gameFlags[condition] === true;
+        return (gameState.gameFlags[condition] === true) || (gameState[condition] === true);
     }
 
     /**
-     * Update items list display
+     * Updates the items list display in the UI.
+     * @function updateItemsList
      */
     function updateItemsList() {
         if (!itemsListEl) return;
@@ -752,7 +959,9 @@
     }
 
     /**
-     * Handle item click when evidence prompt is active
+     * Handles item click when evidence prompt is active, progressing to the appropriate scene.
+     * @param {string} itemName - The name of the clicked item.
+     * @function handleItemClick
      */
     function handleItemClick(itemName) {
         const currentScene = getCurrentScene();
@@ -760,15 +969,11 @@
         console.log('Item clicked:', itemName);
         console.log('Current scene ID:', currentScene?.sceneId);
         
-        // Find current scene index in array
         const currentIndex = locationScenes.findIndex(s => s.sceneId === currentScene.sceneId);
         
-        // Find next evidence_choices scene
         for (let i = currentIndex + 1; i < locationScenes.length; i++) {
             if (locationScenes[i].type === 'evidence_choices') {
-                console.log('Found evidence_choices scene at sceneId:', locationScenes[i].sceneId);
-                
-                // Find the matching choice for this item in the evidence_choices scene
+                addMinutes(5); 
                 const evidenceScene = locationScenes[i];
                 console.log('Evidence choices:', evidenceScene.choices);
                 
@@ -781,12 +986,10 @@
                 
                 if (matchingChoice && matchingChoice.nextScene !== undefined) {
                     console.log('Jumping to scene:', matchingChoice.nextScene);
-                    // Jump directly to the response scene for this item
                     progressToSceneById(matchingChoice.nextScene);
                     return;
                 }
                 
-                // If no matching choice found, do nothing (item has no evidence text)
                 console.log('No matching choice for this item - ignoring click');
                 return;
             }
@@ -796,13 +999,13 @@
     }
 
     /**
-     * Show evidence choices (find next evidence_choices scene)
+     * Shows the next evidence choices scene after the current scene.
+     * @function showEvidenceChoices
      */
     function showEvidenceChoices() {
         const currentScene = getCurrentScene();
         const currentIndex = locationScenes.findIndex(s => s.sceneId === currentScene.sceneId);
         
-        // Find next evidence_choices scene
         for (let i = currentIndex + 1; i < locationScenes.length; i++) {
             if (locationScenes[i].type === 'evidence_choices') {
                 progressToSceneById(locationScenes[i].sceneId);
@@ -812,15 +1015,14 @@
     }
 
     /**
-     * Setup location buttons
+     * Sets up the location buttons in the UI for discovered locations.
+     * @function setupLocationButtons
      */
     function setupLocationButtons() {
         if (!locationsListEl) return;
 
-        // Clear existing locations
         locationsListEl.innerHTML = '';
 
-        // Create location items for discovered locations
         gameState.discoveredLocations.forEach(locationKey => {
             const metadata = locationsMetadata[locationKey];
             if (!metadata) return;
@@ -829,7 +1031,6 @@
             li.textContent = metadata.displayName;
             li.className = 'location-item';
             
-            // Mark current location as active
             if (locationKey === currentLocation) {
                 li.classList.add('active');
             }
@@ -841,11 +1042,11 @@
     }
 
     /**
-     * Clear display areas
+     * Clears the display areas for dialogue, choices, character image, and next button.
+     * @function clearAreas
      */
     function clearAreas() {
         if (dialogueEl) {
-            // Clear all children except the choices element
             const children = Array.from(dialogueEl.children);
             children.forEach(child => {
                 if (child.id !== 'choices') {
@@ -853,7 +1054,6 @@
                 }
             });
         }
-        // Clear choices content separately
         const choicesElement = document.getElementById('choices');
         if (choicesElement) choicesElement.innerHTML = '';
         
@@ -861,10 +1061,11 @@
         if (nextButtonContainer) nextButtonContainer.innerHTML = '';
     }
 
-    // Initialize game when page loads
     initializeGame();
+    if (typeof loadTimeFromBackend === 'function') {
+        await loadTimeFromBackend();
+    }
 
-    // Export for mini-games to access
     window.gameEngine = {
         getGameState: () => gameState,
         refreshState: initializeGame,

@@ -44,7 +44,6 @@ module.exports = (sequelize) => {
     }
   );
 
-  // Hash password if provided before create/update
   User.beforeCreate(async (user) => {
     if (user.password) {
       const hashed = await argon2.hash(user.password);
@@ -59,7 +58,6 @@ module.exports = (sequelize) => {
     }
   });
 
-  // Remove sensitive fields from returned JSON
   User.prototype.toJSON = function () {
     const values = Object.assign({}, this.get());
     delete values.password;

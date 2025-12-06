@@ -70,14 +70,12 @@ Then edit the file:
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Add your migration code here
     await queryInterface.createTable('achievements', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true
       },
-      // ... more fields
       created_at: {
         type: Sequelize.DATE,
         allowNull: false
@@ -90,7 +88,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    // Undo the migration
     await queryInterface.dropTable('achievements');
   }
 };
@@ -107,10 +104,8 @@ The config supports multiple environments (development, test, production).
 
 Set the `NODE_ENV` variable:
 ```bash
-# Use test database
 NODE_ENV=test npm run migrate
 
-# Use production database
 NODE_ENV=production npm run migrate
 ```
 

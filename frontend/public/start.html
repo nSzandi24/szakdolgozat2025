@@ -11,9 +11,14 @@
 		<div class="sidebar-inner">
 			<!-- Idő szekció -->
 			<div class="sidebar-section time-section">
-				<div class="time-display" id="gameTime">6:00</div>
+				<div class="time-display" id="gameTime">06:00</div>
 			</div>
-			
+
+			<!-- Jegyzet gomb -->
+			<div class="sidebar-section note-button-section">
+				<button id="openNoteBtn">Jegyzet megnyitása</button>
+			</div>
+
 			<!-- Helyszínek szekció -->
 			<div class="sidebar-section locations-section">
 				<h3>Helyszínek</h3>
@@ -56,12 +61,23 @@
 		<div class="controls">
 			<!-- Location buttons will be added here by gameEngine -->
 		</div>
+
+		
+		<aside id="notesPanel">
+			<h3>Saját jegyzet</h3>
+			<textarea id="playerNotes"></textarea>
+			<div class="notes-panel-buttons">
+				<button id="saveNotesBtn">Jegyzet mentése</button>
+				<button id="closeNoteBtn">Bezárás</button>
+			</div>
+			<span id="notesSaveStatus"></span>
+		</aside>
 	</main>
 
 	<script src="scripts/apiClient.js"></script>
 	<script src="scripts/gameEngine.js"></script>
-	<script>
-		// Logout button handler
+	<script type="module">
+		import { loadTimeFromBackend } from './scripts/time.constans.js';
 		document.getElementById('logoutBtn').addEventListener('click', async () => {
 			try {
 				await apiClient.logout();
@@ -69,6 +85,22 @@
 			} catch (error) {
 				console.error('Logout error:', error);
 			}
+		});
+		document.addEventListener('DOMContentLoaded', function() {
+			const openBtn = document.getElementById('openNoteBtn');
+			const notePanel = document.getElementById('notesPanel');
+			const closeBtn = document.getElementById('closeNoteBtn');
+			openBtn.addEventListener('click', () => {
+				notePanel.style.display = 'flex';
+			});
+			closeBtn.addEventListener('click', () => {
+				notePanel.style.display = 'none';
+				const statusSpan = document.getElementById('notesSaveStatus');
+				if (statusSpan) statusSpan.textContent = '';
+			});
+		});
+		document.addEventListener('DOMContentLoaded', () => {
+			loadTimeFromBackend();
 		});
 	</script>
 </body>

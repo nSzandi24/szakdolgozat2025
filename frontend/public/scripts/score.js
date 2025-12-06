@@ -16,13 +16,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     const gameStateRes = await window.apiClient.get('/api/game/state');
     const gameState = gameStateRes.gameState || {};
 
+    const investigationTime = typeof gameState.investigationTime === 'number' ? gameState.investigationTime : 0;
+    const totalMinutes = investigationTime + 360; // 6:00-tól
+    const days = Math.floor(totalMinutes / (24 * 60)) + 1;
+    const dayMinutes = totalMinutes % (24 * 60);
+    let hours = Math.floor(dayMinutes / 60) + 6;
+    if (hours >= 24) hours -= 24;
+    const minutes = dayMinutes % 60;
+    const realDay = (Math.floor((Math.floor(dayMinutes / 60) + 6) / 24) > 0) ? days + 1 : days;
+    const realHours = (Math.floor(dayMinutes / 60) + 6) >= 24 ? hours : Math.floor(dayMinutes / 60) + 6;
+    const nyomozasiIdoStr = `${realDay} nap ${realHours} óra ${minutes} perc`;
+
+    const nyomozasiDiv = document.createElement('div');
+    nyomozasiDiv.className = 'score-row';
+    nyomozasiDiv.innerHTML = `<span class="score-question">Nyomozási idő</span> <span class="score-answer">${nyomozasiIdoStr}</span>`;
+    container.appendChild(nyomozasiDiv);
+
     const correct = {
       weapon: 'Kalapács',
-      killer: 'Névtelen alak',
-      motive: 'Bogyók',
+      killer: 'Mark ifjú',
+      motive: 'Tartozása volt a Ghostskin-nek, amit nem tudott kifizetni.',
       kidnapper: 'A 3 kisfiú',
-      kidnapMotive: 'Foltok',
-      ghostskin: 'Névtelen alak',
+      kidnapMotive: 'A Ghostskin szemet vetett rá.',
+      ghostskin: 'Mark ifjú',
     };
     const questions = [
       { key: 'weapon', text: 'Mi volt a gyilkos fegyver?' },

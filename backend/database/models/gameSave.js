@@ -57,6 +57,8 @@ module.exports = (sequelize) => {
         nyomornegyed_decision: this.nyomornegyed_decision,
         game1_completed: this.game1_completed,
         game2_completed: this.game2_completed,
+        investigationTime: this.investigationTime,
+        notes: this.notes || '',
         lastUpdated: this.updatedAt,
       };
     }
@@ -132,6 +134,14 @@ module.exports = (sequelize) => {
       game2_completed: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+      },
+      investigationTime: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      notes: {
+        type: DataTypes.TEXT,
+        defaultValue: '',
       },
     },
     {

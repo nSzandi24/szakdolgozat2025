@@ -1,11 +1,8 @@
 document.addEventListener('DOMContentLoaded', async function() {
-    // --- Pontszám automatikus mentése story.html betöltésekor ---
     try {
-      // Lekérjük az utolsó beküldött megoldást
       const solutionRes = await window.apiClient.get('/api/game/solution');
       const solution = solutionRes.solution;
       if (solution) {
-        // Újra elküldjük a mentés API-ra, hogy a pontszám biztosan frissüljön
         await window.apiClient.saveSolution({
           weapon: solution.weapon,
           killer: solution.killer,
@@ -16,10 +13,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
       }
     } catch (e) {
-      // Nem baj, ha nincs megoldás vagy hiba van, csak logoljuk
       console.warn('Pontszám automatikus mentése sikertelen:', e);
     }
-    // --- /Pontszám automatikus mentése ---
 
     const scoreBtn = document.getElementById('scoreBtn');
     if (scoreBtn) {
@@ -29,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     const endingText = document.getElementById('endingText');
     const logoutBtn = document.getElementById('logoutBtn');
-    // Add Tovább button
     const nextBtn = document.createElement('button');
     nextBtn.textContent = 'Tovább';
     nextBtn.style.display = 'none';

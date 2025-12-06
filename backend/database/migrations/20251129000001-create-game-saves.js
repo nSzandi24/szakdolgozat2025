@@ -68,7 +68,6 @@ module.exports = {
       }
     });
 
-    // Add index for faster user lookups
     await queryInterface.addIndex('game_saves', ['user_id']);
   },
 

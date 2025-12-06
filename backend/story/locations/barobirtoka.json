@@ -3,12 +3,12 @@
   "displayName": "Báró birtoka",
   "backgroundImage": "pictures/barobirtoka.png",
   "scenes": [
-    {"sceneId":"arrival_at_manor", "type":"narrative", "text":"Megérkeztél a báró birtokára. A hatalmas kastély impozáns látványt nyújt."},
-    {"sceneId":"busy_estate", "type":"narrative", "text":"A birtokon rengeteg ember sürög-forog, mintha valami fontos esemény készülődne. Lovaskocsik, szolgák és vendégek jönnek-mennek. De ez egy átlagos napnak tűnik a báró életében."},
-    {"sceneId":"garden_gathering", "type":"narrative", "text":"A kastély előtti kertben egy csoport ember gyülekezik, köztük a báró is. Úgy tűnik, hogy valami fontos megbeszélés zajlik."},
-    {"sceneId":"stable_boy_approaches", "type":"narrative", "text":"Az érkezésedre felfigyel egy lovász fiú és odalép hozzád."},
-    {"sceneId":"thomas_introduction", "type":"narrative", "text":"Üdvözlöm detektív úr! Én Thomas vagyok, a báró lovásza. A báró éppen nagyon elfoglalt, csak sürgős ügyben zavarnám meg csak!", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"main_choice", "type":"choices", "prompt":"Mit teszel?", "evidencePrompt": "Nyomok kérdezése", "startFromHereUnless": "", "choices":[
+    {"sceneId":"arrival_at_manor", "type":"narrative", "text":"Megérkezel a báró birtokára. A hatalmas kastély méltóságteljesen magasodik eléd."},
+    {"sceneId":"busy_estate", "type":"narrative", "text":"A birtokon sokaság sürög-forog, mintha nagy esemény készülődne. Lovaskocsik, szolgák, vendégek jönnek-mennek – ám mindez csupán egy átlagos nap a báró életében."},
+    {"sceneId":"garden_gathering", "type":"narrative", "text":"A kastély előtti kertben népes társaság gyülekezik, köztük maga a báró is. Úgy tűnik, fontos tanácskozás zajlik."},
+    {"sceneId":"stable_boy_approaches", "type":"narrative", "text":"Érkezésedre felfigyel egy lovászfiú, s odalép hozzád."},
+    {"sceneId":"thomas_introduction", "type":"narrative", "text":"Üdvözlöm, detektív uram! Thomas vagyok, a báró lovásza. A báró most igen elfoglalt, csak sürgős ügyben zavarnám!", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"main_choice", "type":"choices", "prompt":"Mit cselekszel?", "evidencePrompt": "Nyomok felől érdeklődsz", "startFromHereUnless": "", "choices":[
       {"id":"talk_baron", "label":"Megszólítod a bárót", "nextScene": "baron_greeting", "condition": "baronAvailable"},
       {"id":"talk_thomas", "label":"Megszólítod Thomast", "nextScene": "approach_thomas", "condition": "baronTalked"}
     ]},
@@ -18,42 +18,37 @@
       {"id":"gyumolcsok", "label":"Gyümölcsök", "nextScene": "show_thomas_gyumolcsok_early", "requiresItem": "Gyümölcsök"},
       {"id":"back", "label":"Vissza", "nextScene": "main_choice"}
     ]},
-    {"sceneId":"show_thomas_kendo_early", "type":"narrative", "text":"Megmutatod Thomasnak a kendőt a báró címerével."},
-    {"sceneId":"thomas_examines_kendo", "type":"narrative", "text":"Thomas figyelmesen megnézi és ráismer."},
-    {"sceneId":"thomas_recognizes_kendo", "type":"narrative", "text":"Ez a mi címerünk! Ez Charlotte kisasszony kendője, én adtam neki személyesen.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_shocked", "type":"narrative", "text":"Hogy érti hogy meggyilkolták? Reggel elment a piacra vásárolni, de azóta nem láttuk visszatérni. Vele tartott Sebastian is.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_alerts_baron", "type":"narrative", "text":"Thomas visszaadja neked a kendőt és elrohan szólni a bárónak aki ez után odamegy hozzád.", "nextScene": "main_choice", "setState": {"baronAvailable": true}},
-
-    {"sceneId":"thomas_returns_stable", "type":"narrative", "text":"Thomas bólint és visszamegy az istállóba."},
-    {"sceneId":"thomas_watching", "type":"narrative", "text":"Thomas a távolról tovább figyel, mintha rád várna."},
-    {"sceneId":"baron_greeting", "type":"narrative", "text":"Alex detektív! A lovász tájékoztatott érkezéséről és hogy a cseléd haláláról nyomoz. Hol a fiam aki vele tartott?", "image":"pictures/characters/baro.png"},
-    {"sceneId":"detective_explains", "type":"narrative", "text":"Tájékoztatod hogy Sebastian a gyilkosság óta nincs sehol, és hogy a helyszínen talált nyomok alapján a cselédet megtámadták."},
-    {"sceneId":"baron_demands", "type":"narrative", "text":"Akkor maga mit csinál itt? Miért nem a fiamat keresi?", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
-
+    {"sceneId":"show_thomas_kendo_early", "type":"narrative", "text":"Megmutatod Thomasnak a kendőt, melyen a báró címere díszeleg."},
+    {"sceneId":"thomas_examines_kendo", "type":"narrative", "text":"Thomas figyelmesen szemléli, s ráismer."},
+    {"sceneId":"thomas_recognizes_kendo", "type":"narrative", "text":"Ez a mi címerünk! Charlotte kisasszony kendője, magam adtam neki.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_shocked", "type":"narrative", "text":"Hogy érti, hogy meggyilkolták? Reggel a piacra indult vásárolni, azóta nem láttuk. Sebastian is vele tartott.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_alerts_baron", "type":"narrative", "text":"Thomas visszaadja a kendőt, s elrohan, hogy szóljon a bárónak, ki ezután hozzád lép.", "nextScene": "main_choice", "setState": {"baronAvailable": true}},
+    {"sceneId":"thomas_returns_stable", "type":"narrative", "text":"Thomas bólint, s visszatér az istállóba."},
+    {"sceneId":"thomas_watching", "type":"narrative", "text":"Thomas távolról figyel, mintha rád várna."},
+    {"sceneId":"baron_greeting", "type":"narrative", "text":"<PLAYER_NAME> detektív! A lovász jelezte érkezését, s hogy a cseléd halála ügyében nyomoz. Hol a fiam, ki vele tartott?", "image":"pictures/characters/baro.png"},
+    {"sceneId":"detective_explains", "type":"narrative", "text":"Tájékoztatod, hogy Sebastian a gyilkosság óta nincs sehol, s a helyszínen talált nyomok szerint a cselédet megtámadták."},
+    {"sceneId":"baron_demands", "type":"narrative", "text":"Akkor hát mit keres még itt? Miért nem a fiamat kutatja?", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
     {"sceneId":"baron_questions", "type":"choices", "prompt":"Mit kérdezel még?", "image":"pictures/characters/baro.png", "choices":[
-      {"id":"ask_charlotte", "label":"Charlotte-ról kérdezel", "nextScene": "baron_about_charlotte"},
-      {"id":"ask_sebastian", "label":"Sebastian-ról kérdezel", "nextScene": "baron_about_sebastian"},
-      {"id":"ask_kendo", "label":"Kendőről kérdezel", "nextScene": "baron_about_kendo"},
+      {"id":"ask_charlotte", "label":"Charlotte felől érdeklődsz", "nextScene": "baron_about_charlotte"},
+      {"id":"ask_sebastian", "label":"Sebastian felől érdeklődsz", "nextScene": "baron_about_sebastian"},
+      {"id":"ask_kendo", "label":"A kendőről kérdezel", "nextScene": "baron_about_kendo"},
       {"id":"end_talk", "label":"Befejezed a beszélgetést", "nextScene": "baron_dismisses"}
     ]},
     {"sceneId":"baron_about_charlotte", "type":"narrative", "text":"A cseléd felelt Sebastian fiam felügyeletéért, sok időt töltöttek együtt.", "image":"pictures/characters/baro.png"},
-    {"sceneId":"baron_charlotte_complaints", "type":"narrative", "text":"Habár... az a boszorkány nő... az utóbbi napokban nem voltam vele megelégedve. Ha őszinte akarok lenni úgy viselkedett minden nap mintha másnaposság gyötörné, szédelgett, fáradt volt, elfelejtette a kiadott utasításokat.", "image":"pictures/characters/baro.png"},
-    {"sceneId":"baron_charlotte_dismissal", "type":"narrative", "text":"Bevallom éppen azon voltam, hogy elbocsátsam a birtokról és úgy cselédet vegyek fel a helyére. De tudja az elég sok papírmunkával jár.", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
-
-    {"sceneId":"baron_about_sebastian", "type":"narrative", "text":"Sebastian egy jó fiú, de néha meggondolatlanul cselekszik. Nemrégiben például érdekes cukorkákat találtam nála. Utána érdeklődtem és mind ismeretlen eredetű volt.", "image":"pictures/characters/baro.png"},
-    {"sceneId":"baron_sebastian_friends", "type":"narrative", "text":"Emellett meghallottam egy beszélgetését, mely arról szólt hogy új barátokat szerzett, de ezek nem előkelő családok gyermekeik.", "image":"pictures/characters/baro.png"},
-    {"sceneId":"baron_blames_charlotte", "type":"narrative", "text":"Ez is a cseléd hibája lehetett csak!", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
-
-    {"sceneId":"baron_about_kendo", "type":"narrative", "text":"Megmutatod a bárónak a kendőt a báró címerével."},
-    {"sceneId":"baron_angry_kendo", "type":"narrative", "text":"Ez hogy került hozzá? A cselédek nem kaphattak ilyen értékes tárgyakat. Akik birtokolhaták, azok a családtagok, a hintókocsisok, a kereskedőink és a lovászaink. Emellett még tolvaj is volt az a nő!", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
-
-    {"sceneId":"baron_dismisses", "type":"narrative", "text":"Detektív, találja meg minnél hamarabb a fiamat! Ne vesztegesse el az idejét egy jelentéktelen cseléd nyomozására!", "image":"pictures/characters/baro.png", "nextScene": "main_choice", "setState": {"baronTalked": true}},
-
-    {"sceneId":"approach_thomas", "type":"narrative", "text":"Odamész Thomas-hoz, aki idegesen vár rád az istálló mellett."},
-    {"sceneId":"thomas_greets_detective", "type":"narrative", "text":"Detektív úr, miben segíthetek?", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_questions", "type":"choices", "prompt":"Mit kérdezel Thomastól?", "evidencePrompt": "Nyomok kérdezése", "image":"pictures/characters/thomas.png", "choices":[
-      {"id":"thomas_charlotte", "label":"Charlotte-ról kérdezel", "nextScene": "thomas_about_charlotte"},
-      {"id":"thomas_sebastian", "label":"Sebastian-ról kérdezel", "nextScene": "thomas_about_sebastian"},
+    {"sceneId":"baron_charlotte_complaints", "type":"narrative", "text":"Habár... az a boszorkány nő az utóbbi napokban nem volt kedvemre. Ha őszinte akarok lenni, minden nap úgy viselkedett, mintha másnaposság gyötörné: szédelgett, fáradt volt, s elfelejtette a kiadott parancsokat.", "image":"pictures/characters/baro.png"},
+    {"sceneId":"baron_charlotte_dismissal", "type":"narrative", "text":"Bevallom, épp azon voltam, hogy elbocsássam a birtokról, s új cselédet fogadjak helyette. De tudja, az efféle sok papírmunkával jár.", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
+    {"sceneId":"baron_about_sebastian", "type":"narrative", "text":"Sebastian jó fiú, ám néha meggondolatlan. Nemrégiben különös cukorkákat találtam nála, s mind ismeretlen eredetű volt.", "image":"pictures/characters/baro.png"},
+    {"sceneId":"baron_sebastian_friends", "type":"narrative", "text":"Hallottam, amint új barátairól beszélt, de azok nem előkelő családok gyermekei.", "image":"pictures/characters/baro.png"},
+    {"sceneId":"baron_blames_charlotte", "type":"narrative", "text":"Ez is a cseléd hibája lehetett!", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
+    {"sceneId":"baron_about_kendo", "type":"narrative", "text":"Megmutatod a bárónak a kendőt, melyen a család címere látható."},
+    {"sceneId":"baron_angry_kendo", "type":"narrative", "text":"Hogy került ez hozzá? A cselédek nem kaphattak ilyen értékes holmit. Ilyet csak családtag, hintókocsis, kereskedő vagy lovász birtokolhat. Emellett még tolvaj is volt az a nő!", "image":"pictures/characters/baro.png", "nextScene": "baron_questions"},
+    {"sceneId":"baron_dismisses", "type":"narrative", "text":"Detektív, lelje meg mihamarabb a fiamat! Ne vesztegesse idejét egy jelentéktelen cseléd ügyére!", "image":"pictures/characters/baro.png", "nextScene": "main_choice", "setState": {"baronTalked": true}},
+    {"sceneId":"approach_thomas", "type":"narrative", "text":"Odamégy Thomas-hoz, ki idegesen vár az istálló mellett."},
+    {"sceneId":"thomas_greets_detective", "type":"narrative", "text":"Detektív uram, miben lehetek szolgálatára?", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_questions", "type":"choices", "prompt":"Mit kérdezel Thomastól?", "evidencePrompt": "Nyomok felől érdeklődsz", "image":"pictures/characters/thomas.png", "choices":[
+      {"id":"thomas_charlotte", "label":"Charlotte felől érdeklődsz", "nextScene": "thomas_about_charlotte"},
+      {"id":"thomas_sebastian", "label":"Sebastian felől érdeklődsz", "nextScene": "thomas_about_sebastian"},
+      {"id":"thomas_evidence", "label":"A kendőről érdeklődsz", "nextScene": "thomas_kendo_reveal"},
       {"id":"thomas_end", "label":"Befejezed a beszélgetést", "nextScene": "main_choice"}
     ]},
     {"sceneId":"thomas_evidence_choices", "type":"evidence_choices", "prompt":"Melyik nyomról kérdezel?", "image":"pictures/characters/thomas.png", "choices":[
@@ -62,39 +57,34 @@
       {"id":"gyumolcsok", "label":"Gyümölcsök", "nextScene": "thomas_gyumolcsok_comment", "requiresItem": "Gyümölcsök"},
       {"id":"back", "label":"Vissza", "nextScene": "thomas_questions"}
     ]},
-    {"sceneId":"thomas_about_charlotte", "type":"narrative", "text":"Charlotte kisasszony nagyon kedves volt. Minden reggel köszönt nekem, amikor a lovakat etettem, és naponta többször is összefutottunk és mindig beszélgettünk kicsit.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_charlotte_strange", "type":"narrative", "text":"Az utóbbi időben azonban furcsán viselkedett. Sokszor láttam, hogy szédült és fáradtnak tűnt.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_charlotte_concerns", "type":"narrative", "text":"Egyszer meg is kérdeztem, hogy jól van-e, de csak annyit mondott, hogy minden rendben.", "image":"pictures/characters/thomas.png", "nextScene": "thomas_questions"},
-
-    {"sceneId":"thomas_about_sebastian", "type":"narrative", "text":"Sebastian fiatal úr gyakran eljött az istállóba. Szeretett a lovakkal lenni.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_sebastian_charlotte", "type":"narrative", "text":"Charlotte kisasszony mindig vele volt. Felügyelete alá tartozott a fiatal úr.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_market_trip", "type":"narrative", "text":"Ma reggel is együtt indultak el a piacra. Azt mondták, vásárolni mennek.", "image":"pictures/characters/thomas.png", "nextScene": "thomas_questions"},
-
+    {"sceneId":"thomas_about_charlotte", "type":"narrative", "text":"Charlotte kisasszony igen kedves volt. Minden reggel köszöntött, mikor a lovakat etettem, s naponta többször is összefutottunk, mindig váltottunk néhány szót.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_charlotte_strange", "type":"narrative", "text":"Az utóbbi időben azonban furcsán viselkedett. Gyakran láttam, hogy szédelgett, s fáradtnak tűnt.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_charlotte_concerns", "type":"narrative", "text":"Egyszer meg is kérdeztem, jól van-e, de csak annyit mondott: minden rendben.", "image":"pictures/characters/thomas.png", "nextScene": "thomas_questions"},
+    {"sceneId":"thomas_about_sebastian", "type":"narrative", "text":"Sebastian ifjú úr gyakran járt az istállóba, szerette a lovakat.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_sebastian_charlotte", "type":"narrative", "text":"Charlotte kisasszony mindig vele volt, felügyelete alá tartozott a fiú.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_market_trip", "type":"narrative", "text":"Ma reggel is együtt indultak a piacra, vásárolni szándékoztak.", "image":"pictures/characters/thomas.png", "nextScene": "thomas_questions"},
     {"sceneId":"thomas_kendo_reveal", "type":"narrative", "text":"Újra megmutatod Thomasnak a kendőt."},
-    {"sceneId":"thomas_kendo_sad", "type":"narrative", "text":"Thomas szomorúan nézi."},
-    {"sceneId":"thomas_relationship_reveal", "type":"narrative", "text":"Igen, ez a kendő eredetileg az enyém volt. Kérem a báró úrnak ne árulja el, de Charlotte és köztem több volt mint munkaviszony.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_secret_relationship", "type":"narrative", "text":"Teljesen titokba tartottuk, éjszakánként mentem át hozzá. Az igaz, hogy az utóbbi időkben valami megváltozott, de az indokát még nekem sem árulta el.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_ghostskin_mention", "type":"narrative", "text":"Volt olyan éjszaka, hogy megkért ne menjek át, és akkor láttam hogy kiszökött, de nem követtem. Másnap mikor rákérdeztem csak annyit árult el nekem hogy a Ghostskin-nel találkozott.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_offers_key", "type":"narrative", "text":"Abban tudok segíteni, hogy adok magának egy kulcsot. Ez a kulcs a kisasszony szobájához tartozik. Adott nekem egyet, hogy hangtalanul betudjak szökni hozzá.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_gives_key", "type":"narrative", "text":"Thomas nézi még egy pillanat erejéig a kendőt, aztán visszaadja és átadja a kulcsot.", "addItem": "Charlotte szobakulcsa", "location": "Charlotte szobája", "nextScene": "thomas_questions"},
-    
+    {"sceneId":"thomas_kendo_sad", "type":"narrative", "text":"Thomas szomorúan szemléli."},
+    {"sceneId":"thomas_relationship_reveal", "type":"narrative", "text":"Igen, e kendő eredetileg az enyém volt. Kérem, a báró úrnak ne árulja el, de Charlotte és köztem több volt, mint puszta munkaviszony.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_secret_relationship", "type":"narrative", "text":"Teljes titokban tartottuk, éjjelente jártam át hozzá. Igaz, az utóbbi időben valami megváltozott, de okát még nekem sem mondta el.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_ghostskin_mention", "type":"narrative", "text":"Volt, hogy megkért, ne menjek át hozzá, s láttam, hogy kiszökött. Másnap, mikor rákérdeztem, csak annyit mondott: Ghostskinnel találkozott.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_offers_key", "type":"narrative", "text":"Segíthetek annyiban, hogy adok egy kulcsot. Ez Charlotte szobájához tartozik. Nekem is adott egyet, hogy nesztelenül bejuthassak hozzá.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"infobaroszoba", "type":"narrative", "text":"Feloldottad Charlotte szobája helyszínét! Mostantól oda is elmehetsz.", "once": true},
+    {"sceneId":"thomas_gives_key", "type":"narrative", "text":"Thomas még egy pillanatig nézi a kendőt, majd visszaadja, s átadja a kulcsot.", "addItem": "Charlotte szobakulcsa", "location": "Charlotte szobája", "nextScene": "thomas_questions"},
     {"sceneId":"thomas_kalapacs_reaction", "type":"narrative", "text":"Megmutatod Thomasnak a kalapácsot."},
-    {"sceneId":"thomas_kalapacs_pale", "type":"narrative", "text":"Thomas megláttja a kalapácsot és hirtelen elsápad.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_kalapacs_sick", "type":"narrative", "text":"Thomas rosszul lesz, a falhoz támaszkodik és mélyen lélegzik.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_kalapacs_end", "type":"narrative", "text":"Látva az állapotát gyorsan elrakod a kalapácsot.", "nextScene": "thomas_questions"},
-
+    {"sceneId":"thomas_kalapacs_pale", "type":"narrative", "text":"Thomas arca elsápad, ahogy meglátja a kalapácsot.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_kalapacs_sick", "type":"narrative", "text":"Thomas rosszul lesz, a falnak támaszkodik, s mélyeket lélegzik.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_kalapacs_end", "type":"narrative", "text":"Látva állapotát, gyorsan elrakod a kalapácsot.", "nextScene": "thomas_questions"},
     {"sceneId":"thomas_gyumolcsok_comment", "type":"narrative", "text":"Megmutatod Thomasnak a gyümölcsöket."},
-    {"sceneId":"thomas_gyumolcsok_examine", "type":"narrative", "text":"Thomas figyelmesen megnézi őket.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_gyumolcsok_confirm", "type":"narrative", "text":"Ha jól sejtem, ezt vette Charlotte kisasszóny a mai napon.", "image":"pictures/characters/thomas.png", "nextScene": "thomas_questions"},
-
+    {"sceneId":"thomas_gyumolcsok_examine", "type":"narrative", "text":"Thomas figyelmesen szemléli őket.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_gyumolcsok_confirm", "type":"narrative", "text":"Ha jól sejtem, ezt vette Charlotte kisasszony ma reggel.", "image":"pictures/characters/thomas.png", "nextScene": "thomas_questions"},
     {"sceneId":"show_thomas_kalapacs_early", "type":"narrative", "text":"Megmutatod Thomasnak a kalapácsot."},
-    {"sceneId":"thomas_kalapacs_pale_early", "type":"narrative", "text":"Thomas megláttja a kalapácsot és hirtelen elsápad.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_kalapacs_sick_early", "type":"narrative", "text":"Thomas rosszul lesz, a falhoz támaszkodik és mélyen lélegzik.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_kalapacs_end_early", "type":"narrative", "text":"Látva az állapotát gyorsan elrakod a kalapácsot.", "nextScene": "main_choice"},
-
+    {"sceneId":"thomas_kalapacs_pale_early", "type":"narrative", "text":"Thomas arca elsápad, ahogy meglátja a kalapácsot.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_kalapacs_sick_early", "type":"narrative", "text":"Thomas rosszul lesz, a falnak támaszkodik, s mélyeket lélegzik.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_kalapacs_end_early", "type":"narrative", "text":"Látva állapotát, gyorsan elrakod a kalapácsot.", "nextScene": "main_choice"},
     {"sceneId":"show_thomas_gyumolcsok_early", "type":"narrative", "text":"Megmutatod Thomasnak a gyümölcsöket."},
-    {"sceneId":"thomas_gyumolcsok_examine_early", "type":"narrative", "text":"Thomas figyelmesen megnézi őket.", "image":"pictures/characters/thomas.png"},
-    {"sceneId":"thomas_gyumolcsok_confirm_early", "type":"narrative", "text":"Ha jól sejtem, ezt vette Charlotte kisasszóny a mai napon.", "image":"pictures/characters/thomas.png", "nextScene": "main_choice"}
+    {"sceneId":"thomas_gyumolcsok_examine_early", "type":"narrative", "text":"Thomas figyelmesen szemléli őket.", "image":"pictures/characters/thomas.png"},
+    {"sceneId":"thomas_gyumolcsok_confirm_early", "type":"narrative", "text":"Ha jól sejtem, ezt vette Charlotte kisasszony ma reggel.", "image":"pictures/characters/thomas.png", "nextScene": "main_choice"}
   ]
 }
 
