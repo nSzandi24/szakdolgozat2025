@@ -5,7 +5,7 @@ const path = require('path');
 const registrationService = require('./services/registration');
 const authService = require('./services/auth');
 const storyService = require('./services/storyService');
-const { generateToken } = require('./middleware/authMiddleware');
+const { generateToken, authMiddleware } = require('./middleware/authMiddleware');
 
 const storyRoutes = require('./routes/storyRoutes');
 const gameRoutes = require('./routes/gameRoutes');
@@ -70,8 +70,8 @@ app.post('/logout', (req, res) => {
     res.json({ success: true, message: 'Sikeres kijelentkezés.' });
 });
 
-app.use('/api/story', storyRoutes);
-app.use('/api/game', gameRoutes);
+app.use('/api/story', authMiddleware, storyRoutes);
+app.use('/api/game', authMiddleware, gameRoutes);
 
 const { sequelize } = require('./database');
 
