@@ -37,8 +37,8 @@
     {"sceneId": "diary_lockpick_failure", "type":"narrative", "text":"Hiába próbálkoztál, a napló lakatja túl bonyolultnak bizonyult, nem sikerült feltörnöd.", "condition": "game2Failure"},
     {"sceneId": "diary_lockpick_abandoned", "type":"narrative", "text":"Szerszámod beletört a lakatba, sok próbálkozás után. A naplót többé nem nyithatod ki.", "setState": {"game2Played": true, "game2Abandoned": true}, "nextScene": "home_peaceful"},
 
-    {"sceneId": "rest_at_home", "type":"narrative", "text":"Úgy döntesz, pihensz otthon, hogy erőt gyűjts a folytatáshoz."},
-    {"sceneId": "rest_reflection", "type":"narrative", "text":"Pihenés közben végiggondolod a nyomozás állását, s merre kellene tovább haladnod.", "nextScene": "home_main_choice"},
+    {"sceneId": "rest_at_home", "type":"narrative", "text":"Úgy döntesz, pihensz otthon, hogy erőt gyűjts a folytatáshoz. Pihenés közben végiggondolod a nyomozás állását, s merre kellene tovább haladnod."},
+    {"sceneId": "rest_reflection", "type":"narrative", "text":"Amíg a gondolataidba vagy merülve sikerült elaludnod és be is sötétedett.", "nextScene": "home_main_choice"},
 
     {"sceneId": "home_nyomornegyed", "type":"narrative", "text":"Visszatérsz a nyomornegyedből, akár értékes, akár hiányos információkkal. Ideje pontot tenni az ügy végére, s átadni a nyomozás eredményét Lucas fő őrnek."}
   ]
