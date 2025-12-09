@@ -1,0 +1,104 @@
+.user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+      background: #fffbe6;
+    }
+    .user-table th, .user-table td {
+      border: 1px solid #aaa;
+      padding: 10px 16px;
+      font-size: 18px;
+      text-align: left;
+    }
+    .user-table th {
+      background: #e0d1a2;
+      font-weight: bold;
+    }
+    .user-table tr:nth-child(even) {
+      background: #f9f6e7;
+    }
+    .user-table tr.highlight {
+      background: #d1e7ff !important;
+      font-weight: bold;
+    }
+
+    .header-btn {
+        background: #E0D1A2;
+        color: #000;
+        border:2px solid #000;
+        padding:10px 14px;
+        border-radius:16px;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        font-style: italic;
+        margin-left: 0;
+        margin-right: 0;
+        transition: background 0.2s;
+    }
+    .header-btn:hover {
+        background: #d1c08a;
+    }
+    .button-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        position: fixed;
+        top: 24px;
+        right: 32px;
+        z-index: 1000;
+        gap: 16px;
+    }
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        background: url("../pictures/information.png") no-repeat center center fixed;
+        background-size: cover;
+    }
+    h1 {
+        color: black;
+    }
+    .ending-box h2 {
+        font-weight: normal;
+    }
+    button, .logout-btn {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 24px;
+    }
+     .ending-box {
+      border: 2px solid #000;
+      background: #E0D1A2;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      padding: 40px 32px;
+      min-width: 520px;
+      max-width: 1100px;
+        /* Nyomozási idő sor egy sorban tartása */
+        .score-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: nowrap;
+          gap: 16px;
+        }
+        .score-question, .score-answer {
+          white-space: nowrap;
+          word-break: keep-all;
+        }
+        font-style: italic;
+        position: relative;
+    }
+    .ending-section {
+        margin-top: 24px;
+        font-size: 20px;
+        color: black;
+    }
